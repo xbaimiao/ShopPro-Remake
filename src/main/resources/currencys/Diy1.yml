@@ -1,0 +1,9 @@
+# 货币的识别名 可在物品哪里指定为你自定义的货币
+# 例子
+# A:
+#  material: STONE
+#  currency: DIY1
+name: "DIY1"
+takeCommand: "扣除货币的指令 %player% 为玩家变量 %num% 为数量"
+giveCommand: "给货币的指令 %player% 为玩家变量 %num% 为数量"
+amountPapi: "你自定义的这个货币的papi变量"

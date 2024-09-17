@@ -1,0 +1,131 @@
+type: sell
+name: "自带收购商店"
+title: "系统收购商店"
+
+slots:
+  - 'NNNNNNNNN'
+  - 'NQWERTYUN'
+  - 'NIOP    N'
+  - 'NNNNNNNNX'
+
+items:
+  N:
+    material: GLASS_PANE
+    name: ' '
+    lore:
+      - ' '
+    is-commodity: false
+  X:
+    material: ARROW
+    name: '&f下一页'
+    lore:
+      - '&f点击前往下一页'
+    is-commodity: false
+    commands:
+      - '[open] 默认收购商店'
+  Q:
+    material: COAL
+    name: '&f&l煤炭'
+    price: 0.5
+    lore:
+      - '&a&l左键 &f&l出售单个'
+      - '&a&l右键 &f&l出售一组'
+      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
+      - ''
+      - '&a&l收购价格 &c&l${price}'
+    # 关闭此选项 可只执行命令 不给原版物品
+    vanilla: false
+    commands:
+      - '[console] give %player% COAL'
+  W:
+    material: IRON_INGOT
+    name: '&f&l铁锭'
+    price: 10
+    lore:
+      - '&a&l左键 &f&l出售单个'
+      - '&a&l右键 &f&l出售一组'
+      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
+      - ''
+      - '&a&l收购价格 &c&l${price}'
+  E:
+    material: GOLD_INGOT
+    name: '&f&l金锭'
+    price: 13
+    lore:
+      - '&a&l左键 &f&l出售单个'
+      - '&a&l右键 &f&l出售一组'
+      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
+      - ''
+      - '&a&l收购价格 &c&l${price}'
+  R:
+    material: COPPER_INGOT
+    name: '&f&l铜锭'
+    price: 12
+    lore:
+      - '&a&l左键 &f&l出售单个'
+      - '&a&l右键 &f&l出售一组'
+      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
+      - ''
+      - '&a&l收购价格 &c&l${price}'
+  T:
+    material: DIAMOND
+    name: '&f&l钻石'
+    price: 20
+    lore:
+      - '&a&l左键 &f&l出售单个'
+      - '&a&l右键 &f&l出售一组'
+      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
+      - ''
+      - '&a&l收购价格 &c&l${price}'
+  Y:
+    material: BREAD
+    name: '&f&l面包'
+    price: 3
+    lore:
+      - '&a&l左键 &f&l出售单个'
+      - '&a&l右键 &f&l出售一组'
+      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
+      - ''
+      - '&a&l收购价格 &c&l${price}'
+  U:
+    material: CAKE
+    name: '&f&l蛋糕'
+    price: 30
+    lore:
+      - '&a&l左键 &f&l出售单个'
+      - '&a&l右键 &f&l出售一组'
+      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
+      - ''
+      - '&a&l收购价格 &c&l${price}'
+  I:
+    material: PUMPKIN_PIE
+    name: '&f&l南瓜派'
+    price: 4
+    lore:
+      - '&a&l左键 &f&l出售单个'
+      - '&a&l右键 &f&l出售一组'
+      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
+      - ''
+      - '&a&l收购价格 &c&l${price}'
+  O:
+    material: MUSHROOM_STEW
+    name: '&f&l蘑菇煲'
+    price: 2
+    lore:
+      - '&a&l左键 &f&l出售单个'
+      - '&a&l右键 &f&l出售一组'
+      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
+      - ''
+      - '&a&l收购价格 &c&l${price}'
+
+  # itemsadder 物品
+  P:
+    material: 'IA:PAPER:10007'
+    name: 'itemsadder'
+    price: 20
+    lore:
+      - '&a&l左键 &f&l出售单个'
+      - '&a&l右键 &f&l出售一组'
+      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
+      - ''
+      - '&a&l收购价格 &c&l${price}'

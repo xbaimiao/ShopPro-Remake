@@ -1,0 +1,125 @@
+# 商店类型
+# buy 为购买商店
+# sell 为收购商店
+type: buy
+name: "默认出售商店"
+title: "系统出售商店"
+# 物品摆放顺序
+slots:
+  - 'NNNNNNNNN'
+  - 'NABCD   N'
+  - 'NNNNNNNNN'
+items:
+  N:
+    material: GLASS_PANE
+    name: ' '
+    lore:
+      - ' '
+    # 是否为商品
+    is-commodity: false
+  # 普通物品收购示例
+  A:
+    material: STONE
+    # 指定货币 如果不指定默认Vault
+    # 已预设点券支持 为: "points"
+    # 您可在 currencys 里自定义货币
+    currency: points
+    name: '石头'
+    # data为低版本特有的 data区分material
+#    data: 1
+    # 每日限购买
+    limit: 5000
+    # 每个玩家限购买
+    limit-player: 500
+    # 根据权限限制玩家购买数量 所有权限都不满足则使用limit-player
+    limitMap:
+      vip: 1000
+    # 物品金额
+    price: 2
+    lore:
+      - '&e| &7这里可以购买&6 ${name}'
+      - '&e| &7购买单价 &6${price}'
+      - '&e| &7你的余额 &6${money}'
+      - ''
+      - '&e|&6 左击 &7购买 &6单个'
+      - '&e|&6 右击 &7购买 &6一组 &7需要 &6${price64}'
+      - ''
+      - '&e| &7限买公示:'
+      - '&e| &7每人限制购买: ${limit}'
+      - '&e| &7全服限制购买: ${allLimit}'
+      - '&e| &7您已购买: ${limit-player}'
+      - '&e| &7全服剩余: ${limit-server}'
+  # itemsadder 物品购买示例
+  # 需要使用IA:前缀 中间为物品材质 后面为物品customData
+  B:
+    material: 'IA:PAPER:10001'
+    name: 'IA物品名'
+    # 每日限购买
+    limit: 5000
+    # 每个玩家限购买
+    limit-player: 500
+    # 物品金额
+    price: 2
+    lore:
+      - '&e| &7这里可以购买&6 ${name}'
+      - '&e| &7购买单价 &6${price}'
+      - '&e| &7你的余额 &6${money}'
+      - ''
+      - '&e|&6 左击 &7购买 &6单个'
+      - '&e|&6 右击 &7购买 &6一组 &7需要 &6${price64}'
+      - ''
+      - '&e| &7限买公示:'
+      - '&e| &7每人限制购买: ${limit}'
+      - '&e| &7全服限制购买: ${allLimit}'
+      - '&e| &7您已购买: ${limit-player}'
+      - '&e| &7全服剩余: ${limit-server}'
+    # 关闭此选项 可只执行命令 不给原版物品
+    vanilla: false
+    commands:
+      - '[console] ia give %player% 物品 ${amount}'
+  # Zaphkiel物品示范
+  C:
+    material: 'Zaphkiel:example_sword'
+    name: 'Zaphkiel物品'
+    # 每日限购买
+    limit: 5000
+    # 每个玩家限购买
+    limit-player: 500
+    # 物品金额
+    price: 2
+    lore:
+      - '&e| &7这里可以购买&6 ${name}'
+      - '&e| &7购买单价 &6${price}'
+      - '&e| &7你的余额 &6${money}'
+      - ''
+      - '&e|&6 左击 &7购买 &6单个'
+      - '&e|&6 右击 &7购买 &6一组 &7需要 &6${price64}'
+      - ''
+      - '&e| &7限买公示:'
+      - '&e| &7每人限制购买: ${limit}'
+      - '&e| &7全服限制购买: ${allLimit}'
+      - '&e| &7您已购买: ${limit-player}'
+      - '&e| &7全服剩余: ${limit-server}'
+  # MM物品示范
+  D:
+    material: 'MM:KingsCrown'
+    name: 'MM物品'
+    # 每日限购买
+    limit: 5000
+    # 每个玩家限购买
+    limit-player: 500
+    # 物品金额
+    price: 2
+    lore:
+      - '&e| &7这里可以购买&6 ${name}'
+      - '&e| &7购买单价 &6${price}'
+      - '&e| &7你的余额 &6${money}'
+      - ''
+      - '&e|&6 左击 &7购买 &6单个'
+      - '&e|&6 右击 &7购买 &6一组 &7需要 &6${price64}'
+      - ''
+      - '&e| &7限买公示:'
+      - '&e| &7每人限制购买: ${limit}'
+      - '&e| &7全服限制购买: ${allLimit}'
+      - '&e| &7您已购买: ${limit-player}'
+      - '&e| &7全服剩余: ${limit-server}'

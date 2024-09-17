@@ -4,15 +4,15 @@ import com.github.xbaimiao.shoppro.core.item.Item
 import com.github.xbaimiao.shoppro.core.item.ItemLoader
 import com.github.xbaimiao.shoppro.core.item.ShopItem
 import com.github.xbaimiao.shoppro.core.shop.Shop
+import com.xbaimiao.easylib.util.hasLore
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import taboolib.platform.util.hasLore
 
 open class VanillaShopItem(itemSetting: ItemSetting) : ShopItem(itemSetting) {
 
     override fun vanillaItem(player: Player): ItemStack {
-        return com.github.xbaimiao.shoppro.util.buildItem(material) {
+        return com.xbaimiao.easylib.util.buildItem(material) {
             damage = data
         }
     }
@@ -25,7 +25,7 @@ open class VanillaShopItem(itemSetting: ItemSetting) : ShopItem(itemSetting) {
     }
 
     override fun buildItem(player: Player): ItemStack {
-        return com.github.xbaimiao.shoppro.util.buildItem(material) {
+        return com.xbaimiao.easylib.util.buildItem(material) {
             this.name = this@VanillaShopItem.name
             this.lore.addAll(this@VanillaShopItem.lore)
             this.damage = data

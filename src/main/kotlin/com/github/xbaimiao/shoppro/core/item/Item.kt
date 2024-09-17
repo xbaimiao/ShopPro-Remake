@@ -2,12 +2,12 @@ package com.github.xbaimiao.shoppro.core.item
 
 import com.github.xbaimiao.shoppro.core.shop.Shop
 import com.github.xbaimiao.shoppro.core.shop.ShopManager
+import com.xbaimiao.easylib.chat.colored
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.permissions.Permission
-import taboolib.module.chat.colored
 
 
 interface Item {

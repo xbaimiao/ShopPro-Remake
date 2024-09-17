@@ -8,21 +8,15 @@ import com.github.xbaimiao.shoppro.core.item.Item
 import com.github.xbaimiao.shoppro.core.item.KetherCondition
 import com.github.xbaimiao.shoppro.core.item.ShopItem
 import com.github.xbaimiao.shoppro.util.Util.howManyItems
-import com.github.xbaimiao.shoppro.util.Util.replacePapi
+import com.xbaimiao.easylib.bridge.replacePlaceholder
+import com.xbaimiao.easylib.chat.Lang.sendLang
+import com.xbaimiao.easylib.chat.colored
+import com.xbaimiao.easylib.ui.SpigotBasic
+import com.xbaimiao.easylib.util.*
 import org.bukkit.Bukkit
 import org.bukkit.configuration.Configuration
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import taboolib.common.platform.function.info
-import taboolib.common.platform.function.submitAsync
-import taboolib.module.chat.colored
-import taboolib.module.ui.ClickType
-import taboolib.module.ui.openMenu
-import taboolib.module.ui.type.Basic
-import taboolib.platform.util.giveItem
-import taboolib.platform.util.hasItem
-import taboolib.platform.util.sendLang
-import taboolib.platform.util.takeItem
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -53,7 +47,7 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
                 val subSection = section.getConfigurationSection(key)!!
                 if (section.getBoolean("$key.is-commodity", true)) {
                     val materialString = section.getString("$key.material")!!
-                    for (loader in ShopPro.itemLoaderManager.itemLoaders) {
+                    for (loader in ShopPro.inst.itemLoaderManager.itemLoaders) {
                         if (loader.prefix != null) {
                             if (materialString.startsWith(loader.prefix!!)) {
                                 items.add(loader.formSection(key[0], subSection, this))
@@ -61,9 +55,9 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
                             }
                         }
                     }
-                    items.add(ShopPro.itemLoaderManager.getVanillaShop().formSection(key[0], subSection, this))
+                    items.add(ShopPro.inst.itemLoaderManager.getVanillaShop().formSection(key[0], subSection, this))
                 } else {
-                    items.add(ShopPro.itemLoaderManager.getItemImpl().formSection(key[0], subSection, this))
+                    items.add(ShopPro.inst.itemLoaderManager.getItemImpl().formSection(key[0], subSection, this))
                 }
             } catch (e: Throwable) {
                 info("在加载Shop: ${getName()} 时,物品: $key 加载出现异常,跳过加载,错误信息如下")
@@ -73,7 +67,7 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
     }
 
     override fun getTitle(player: Player): String {
-        return configuration.getString("title")!!.colored().replacePapi(player)
+        return configuration.getString("title")!!.colored().replacePlaceholder(player)
     }
 
     override fun getType(): ShopType {
@@ -99,10 +93,14 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
     }
 
     override fun open(player: Player) {
-        player.openMenu<Basic>(getTitle(player)) {
+        val basic = SpigotBasic(player, getTitle(player))
+        basic.apply {
             rows(slots.size)
             slots = CopyOnWriteArrayList<List<Char>>().also { it.addAll(this@ShopImpl.slots) }
             onClick {
+                it.isCancelled = true
+            }
+            onDrag {
                 it.isCancelled = true
             }
             for (item in this@ShopImpl.items) {
@@ -122,17 +120,14 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
                             if (!canClick(player)) {
                                 return@onClick
                             }
-                            if (event.clickType != ClickType.CLICK) {
-                                return@onClick
-                            }
-                            val amount = when (event.clickEvent().click) {
+                            val amount = when (event.click) {
                                 org.bukkit.event.inventory.ClickType.LEFT -> 1
                                 org.bukkit.event.inventory.ClickType.RIGHT -> if (item.enableRight) 64 else 1
                                 else -> return@onClick
                             }
                             checkBuyLimit(amount, item, player)
                             event.currentItem?.let {
-                                event.clickEvent().inventory.setItem(event.rawSlot, item.update(player))
+                                event.inventory.setItem(event.rawSlot, item.update(player))
                             }
                         }
                     }
@@ -141,10 +136,7 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
                             if (!canClick(player)) {
                                 return@onClick
                             }
-                            if (event.clickType != ClickType.CLICK) {
-                                return@onClick
-                            }
-                            val amount = when (event.clickEvent().click) {
+                            val amount = when (event.click) {
                                 org.bukkit.event.inventory.ClickType.LEFT -> 1
                                 org.bukkit.event.inventory.ClickType.RIGHT -> if (item.enableRight) 64 else 1
                                 org.bukkit.event.inventory.ClickType.SHIFT_RIGHT -> {
@@ -159,7 +151,7 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
 
                             checkSellLimit(amount, item, player)
                             event.currentItem?.let {
-                                event.clickEvent().inventory.setItem(event.rawSlot, item.update(player))
+                                event.inventory.setItem(event.rawSlot, item.update(player))
                             }
                         }
                     }
@@ -181,30 +173,30 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
 
     private fun checkBuyLimit(amount: Int, item: ShopItem, player: Player) {
         if (item.isLimit()) {
-            if (ShopPro.database.getPlayerAlreadyData(player, item).buy >= item.getLimitPlayer(player)) {
+            if (ShopPro.inst.database.getPlayerAlreadyData(player, item).buy >= item.getLimitPlayer(player)) {
                 player.sendLang("buy-limit-player", item.getLimitPlayer(player))
-                ShopPro.config.getString("the_voice_of_failure")?.let {
+                ShopPro.inst.config.getString("the_voice_of_failure")?.let {
                     player.playSound(player.location, it, 100f, 1f)
                 }
                 return
             }
-            if (ShopPro.database.getServerAlreadyData(item).buy >= item.limitServer) {
+            if (ShopPro.inst.database.getServerAlreadyData(item).buy >= item.limitServer) {
                 player.sendLang("buy-limit-server", item.limitServer)
-                ShopPro.config.getString("the_voice_of_failure")?.let {
+                ShopPro.inst.config.getString("the_voice_of_failure")?.let {
                     player.playSound(player.location, it, 100f, 1f)
                 }
                 return
             }
-            if (ShopPro.database.getPlayerAlreadyData(player, item).buy + amount > item.getLimitPlayer(player)) {
+            if (ShopPro.inst.database.getPlayerAlreadyData(player, item).buy + amount > item.getLimitPlayer(player)) {
                 buy(
-                    (item.getLimitPlayer(player) - ShopPro.database.getPlayerAlreadyData(player, item).buy).toInt(),
+                    (item.getLimitPlayer(player) - ShopPro.inst.database.getPlayerAlreadyData(player, item).buy).toInt(),
                     item,
                     player
                 )
                 return
             }
-            if (ShopPro.database.getServerAlreadyData(item).buy + amount > item.limitServer) {
-                buy((item.limitServer - ShopPro.database.getServerAlreadyData(item).buy).toInt(), item, player)
+            if (ShopPro.inst.database.getServerAlreadyData(item).buy + amount > item.limitServer) {
+                buy((item.limitServer - ShopPro.inst.database.getServerAlreadyData(item).buy).toInt(), item, player)
                 return
             }
         }
@@ -219,15 +211,15 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
                 player.giveItem(vanilla)
             }
             Bukkit.getPluginManager().callEvent(ShopProBuyEvent(item, amount, player))
-            ShopPro.database.addAmount(item, player, LimitData(amount.toLong(), 0L))
+            ShopPro.inst.database.addAmount(item, player, LimitData(amount.toLong(), 0L))
             item.exeCommands(player, amount)
             player.sendLang("buy-item", amount, item.name, String.format("%.2f", item.price * amount))
-            ShopPro.config.getString("the_voice_of_success")?.let {
+            ShopPro.inst.config.getString("the_voice_of_success")?.let {
                 player.playSound(player.location, it, 100f, 1f)
             }
         } else {
             player.sendLang("not-money")
-            ShopPro.config.getString("the_voice_of_failure")?.let {
+            ShopPro.inst.config.getString("the_voice_of_failure")?.let {
                 player.playSound(player.location, it, 100f, 1f)
             }
         }
@@ -236,18 +228,18 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
     override fun sellItem(player: Player, shopItem: ShopItem, itemStack: ItemStack): Boolean {
         val amount = itemStack.amount
         if (shopItem.isLimit()) {
-            val alreadyPlayerData = ShopPro.database.getPlayerAlreadyData(player, shopItem)
+            val alreadyPlayerData = ShopPro.inst.database.getPlayerAlreadyData(player, shopItem)
             if (alreadyPlayerData.sell >= shopItem.getLimitPlayer(player)) {
                 player.sendLang("sell-limit-player", shopItem.getLimitPlayer(player))
-                ShopPro.config.getString("the_voice_of_failure")?.let {
+                ShopPro.inst.config.getString("the_voice_of_failure")?.let {
                     player.playSound(player.location, it, 100f, 1f)
                 }
                 return false
             }
-            val alreadyServerData = ShopPro.database.getServerAlreadyData(shopItem)
+            val alreadyServerData = ShopPro.inst.database.getServerAlreadyData(shopItem)
             if (alreadyServerData.sell >= shopItem.limitServer) {
                 player.sendLang("sell-limit-server", shopItem.limitServer)
-                ShopPro.config.getString("the_voice_of_failure")?.let {
+                ShopPro.inst.config.getString("the_voice_of_failure")?.let {
                     player.playSound(player.location, it, 100f, 1f)
                 }
                 return false
@@ -266,14 +258,14 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
         }
 
         shopItem.currency.giveMoney(player, shopItem.price * amount)
-        submitAsync {
+        submit(async = true) {
             if (shopItem.isLimit()) {
-                ShopPro.database.addAmount(shopItem, player, LimitData(0L, amount.toLong()))
+                ShopPro.inst.database.addAmount(shopItem, player, LimitData(0L, amount.toLong()))
             }
         }
         Bukkit.getPluginManager().callEvent(ShopProSellEvent(shopItem, amount, player))
         player.sendLang("sell-item", amount, shopItem.name, String.format("%.2f", shopItem.price * amount))
-        ShopPro.config.getString("the_voice_of_success")?.let {
+        ShopPro.inst.config.getString("the_voice_of_success")?.let {
             player.playSound(player.location, it, 100f, 1f)
         }
         return true
@@ -281,30 +273,30 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
 
     private fun checkSellLimit(amount: Int, item: ShopItem, player: Player) {
         if (item.isLimit()) {
-            if (ShopPro.database.getPlayerAlreadyData(player, item).sell >= item.getLimitPlayer(player)) {
+            if (ShopPro.inst.database.getPlayerAlreadyData(player, item).sell >= item.getLimitPlayer(player)) {
                 player.sendLang("sell-limit-player", item.getLimitPlayer(player))
-                ShopPro.config.getString("the_voice_of_failure")?.let {
+                ShopPro.inst.config.getString("the_voice_of_failure")?.let {
                     player.playSound(player.location, it, 100f, 1f)
                 }
                 return
             }
-            if (ShopPro.database.getServerAlreadyData(item).sell >= item.limitServer) {
+            if (ShopPro.inst.database.getServerAlreadyData(item).sell >= item.limitServer) {
                 player.sendLang("sell-limit-server", item.limitServer)
-                ShopPro.config.getString("the_voice_of_failure")?.let {
+                ShopPro.inst.config.getString("the_voice_of_failure")?.let {
                     player.playSound(player.location, it, 100f, 1f)
                 }
                 return
             }
-            if (ShopPro.database.getPlayerAlreadyData(player, item).sell + amount > item.getLimitPlayer(player)) {
+            if (ShopPro.inst.database.getPlayerAlreadyData(player, item).sell + amount > item.getLimitPlayer(player)) {
                 sell(
-                    (item.getLimitPlayer(player) - ShopPro.database.getPlayerAlreadyData(player, item).sell).toInt(),
+                    (item.getLimitPlayer(player) - ShopPro.inst.database.getPlayerAlreadyData(player, item).sell).toInt(),
                     item,
                     player
                 )
                 return
             }
-            if (ShopPro.database.getServerAlreadyData(item).sell + amount > item.limitServer) {
-                sell((item.limitServer - ShopPro.database.getServerAlreadyData(item).sell).toInt(), item, player)
+            if (ShopPro.inst.database.getServerAlreadyData(item).sell + amount > item.limitServer) {
+                sell((item.limitServer - ShopPro.inst.database.getServerAlreadyData(item).sell).toInt(), item, player)
                 return
             }
         }
@@ -312,17 +304,17 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
     }
 
     private fun sell(amount: Int, item: ShopItem, player: Player) {
-        if (player.inventory.hasItem(amount) { item.equal(it) }) {
-            player.inventory.takeItem(amount) { item.equal(it) }
+        if (player.inventory.hasItem(amount) { item.equal(this) }) {
+            player.inventory.takeItem(amount) { item.equal(this) }
             item.currency.giveMoney(player, item.price * amount)
             Bukkit.getPluginManager().callEvent(ShopProSellEvent(item, amount, player))
-            ShopPro.database.addAmount(item, player, LimitData(0L, amount.toLong()))
+            ShopPro.inst.database.addAmount(item, player, LimitData(0L, amount.toLong()))
             player.sendLang("sell-item", amount, item.name, String.format("%.2f", item.price * amount))
-            ShopPro.config.getString("the_voice_of_success")?.let {
+            ShopPro.inst.config.getString("the_voice_of_success")?.let {
                 player.playSound(player.location, it, 100f, 1f)
             }
         } else {
-            ShopPro.config.getString("the_voice_of_failure")?.let {
+            ShopPro.inst.config.getString("the_voice_of_failure")?.let {
                 player.playSound(player.location, it, 100f, 1f)
             }
             player.sendLang("not-item")

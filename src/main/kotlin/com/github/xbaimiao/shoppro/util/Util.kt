@@ -1,12 +1,12 @@
 package com.github.xbaimiao.shoppro.util
 
-import me.clip.placeholderapi.PlaceholderAPI
+import com.xbaimiao.easylib.util.info
+import com.xbaimiao.easylib.util.isNotAir
+import com.xbaimiao.easylib.util.modifyMeta
 import org.bukkit.Bukkit
-import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import taboolib.common.platform.function.info
-import taboolib.platform.util.isNotAir
+import org.bukkit.inventory.meta.ItemMeta
 import java.text.DecimalFormat
 
 object Util {
@@ -32,11 +32,12 @@ object Util {
         return amount
     }
 
-    fun String.replacePapi(player: Player): String {
-        if (hasPapi) {
-            return PlaceholderAPI.setPlaceholders(player, this)
+    fun ItemStack.modifyLore(apply: MutableList<String>.() -> Unit): ItemStack {
+        return this.modifyMeta<ItemMeta> {
+            val lore = this.lore ?: ArrayList()
+            apply(lore)
+            this.lore = lore
         }
-        return this
     }
 
 }

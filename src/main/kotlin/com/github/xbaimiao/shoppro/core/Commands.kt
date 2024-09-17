@@ -3,68 +3,66 @@ package com.github.xbaimiao.shoppro.core
 import com.github.xbaimiao.shoppro.ShopPro
 import com.github.xbaimiao.shoppro.core.shop.Shop
 import com.github.xbaimiao.shoppro.core.shop.ShopManager
-import org.bukkit.Bukkit
+import com.xbaimiao.easylib.chat.Lang.sendLang
+import com.xbaimiao.easylib.command.buildArgNode
+import com.xbaimiao.easylib.command.command
+import com.xbaimiao.easylib.util.CommandBody
+import com.xbaimiao.easylib.util.ECommandHeader
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import taboolib.common.platform.command.*
-import taboolib.expansion.createHelper
-import taboolib.platform.util.onlinePlayers
-import taboolib.platform.util.sendLang
 
-@CommandHeader("shoppro", aliases = ["sp"], permissionDefault = PermissionDefault.TRUE)
+@ECommandHeader("shoppro")
 object Commands {
 
-    @CommandBody
-    val main = mainCommand {
-        createHelper()
-    }
+    val shopArgNode = buildArgNode<Shop?>()
+        .usage("商店")
+        .compile { token ->
+            ShopManager.shops.map { it.getName() }.filter { it.startsWith(token) }
+        }.parse { token ->
+            ShopManager.shops.firstOrNull { it.getName() == token }
+        }.build()
 
     @CommandBody
-    val open = subCommand {
-        dynamic("name") {
-            suggestion<CommandSender> { _, _ ->
-                ShopManager.shops.map { it.getName() }
+    val open = command<CommandSender>("open") {
+        description = "打开商店"
+        val shopArg = arg(shopArgNode)
+        val playerArg = players("玩家(可选)", optional = true)
+        exec {
+            val target = playerArg.valueOrNull()
+            val shop = shopArg.value() ?: return@exec error("商店不存在")
+            if (target != null && sender.hasPermission("shoppro.command.open.admin")) {
+                shop.open(target)
+                return@exec
             }
-            execute<Player> { sender, _, argument ->
-                val shop = ShopManager.shops.first { it.getName() == argument }
-                if (!sender.hasPermission("shoppro.command.open.${shop.getName()}")){
+            if (sender is Player) {
+                if (!sender.hasPermission("shoppro.command.open.${shop.getName()}")) {
                     sender.sendLang("shop-not-permission")
-                    return@execute
+                    return@exec
                 }
-                shop.open(sender)
-            }
-            dynamic("玩家", permission = "shoppro.command.open.admin") {
-                suggestion<CommandSender> { _, _ ->
-                    onlinePlayers.map { it.name }
-                }
-                execute<CommandSender> { _, context, argument ->
-                    val player = Bukkit.getPlayerExact(argument)!!
-                    val shop = ShopManager.shops.first { it.getName() == context.argument(-1) }
-                    shop.open(player)
-                }
+                shop.open(sender as Player)
+            } else {
+                error("控制台请指定玩家")
             }
         }
     }
 
     @CommandBody
-    val sellAll = subCommand {
-        dynamic("name", permission = "shoppro.command.sellall") {
-            suggestion<CommandSender> { _, _ ->
-                ShopManager.shops.map { it.getName() }
+    val sellAll = command<CommandSender>("sellAll") {
+        description = "出售背包内全部物品"
+        permission = "shoppro.command.sellall"
+        val shopArg = arg(shopArgNode)
+        val playerArg = players("玩家(可选)", optional = true)
+        exec {
+            val target = playerArg.valueOrNull()
+            val shop = shopArg.value() ?: return@exec error("商店不存在")
+            if (target != null && sender.hasPermission("shoppro.command.sellall.admin")) {
+                sellAll(target, shop)
+                return@exec
             }
-            execute<Player> { sender, _, argument ->
-                val shop = ShopManager.shops.first { it.getName() == argument }
-                sellAll(sender, shop)
-            }
-            dynamic("玩家", permission = "shoppro.command.sellall.admin") {
-                suggestion<CommandSender> { _, _ ->
-                    onlinePlayers.map { it.name }
-                }
-                execute<CommandSender> { _, context, argument ->
-                    val player = Bukkit.getPlayerExact(argument)!!
-                    val shop = ShopManager.shops.first { it.getName() == context.argument(-1) }
-                    sellAll(player, shop)
-                }
+            if (sender is Player) {
+                sellAll(sender as Player, shop)
+            } else {
+                error("只能玩家才能出售自己背包的物品 控制台请指定玩家")
             }
         }
     }
@@ -77,18 +75,22 @@ object Commands {
         shop.sellAll(player)
     }
 
-    @CommandBody(permission = "shoppro.resetlimit")
-    val resetLimit = subCommand {
-        execute<CommandSender> { sender, _, _ ->
-            ShopPro.database.reset()
+    @CommandBody
+    val resetLimit = command<CommandSender>("resetLimit") {
+        description = "重置限购数据"
+        permission = "shoppro.resetlimit"
+        exec {
+            ShopPro.inst.database.reset()
             sender.sendLang("reset")
         }
     }
 
-    @CommandBody(permission = "shoppro.reload")
-    val reload = subCommand {
-        execute<CommandSender> { sender, _, _ ->
-            ShopPro.reload()
+    @CommandBody
+    val reload = command<CommandSender>("reload") {
+        description = "重载插件"
+        permission = "shoppro.reload"
+        exec {
+            ShopPro.inst.reload()
             sender.sendLang("reload")
         }
     }

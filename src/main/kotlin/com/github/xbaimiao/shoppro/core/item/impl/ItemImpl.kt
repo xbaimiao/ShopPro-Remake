@@ -3,14 +3,15 @@ package com.github.xbaimiao.shoppro.core.item.impl
 import com.github.xbaimiao.shoppro.core.item.Item
 import com.github.xbaimiao.shoppro.core.item.ItemLoader
 import com.github.xbaimiao.shoppro.core.shop.Shop
-import com.github.xbaimiao.shoppro.util.Util.replacePapi
+import com.xbaimiao.easylib.bridge.replacePlaceholder
+import com.xbaimiao.easylib.chat.colored
+import com.xbaimiao.easylib.util.modifyMeta
+import com.xbaimiao.easylib.xseries.XMaterial
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import taboolib.library.xseries.XMaterial
-import taboolib.module.chat.colored
-import taboolib.platform.util.modifyLore
+import org.bukkit.inventory.meta.ItemMeta
 import java.util.*
 
 class ItemImpl(
@@ -21,7 +22,7 @@ class ItemImpl(
     override val vanilla: Boolean,
     override val commands: List<String>,
     override val shop: Shop,
-    override val enableRight: Boolean
+    override val enableRight: Boolean,
 ) : Item {
 
     override lateinit var material: Material
@@ -48,24 +49,24 @@ class ItemImpl(
     }
 
     override fun buildItem(player: Player): ItemStack {
-        return com.github.xbaimiao.shoppro.util.buildItem(material) {
+        return com.xbaimiao.easylib.util.buildItem(material) {
             this.name = this@ItemImpl.name
             this.lore.addAll(this@ItemImpl.lore)
             custom?.let { customModelData = it }
             head?.let {
-                skullTexture = com.github.xbaimiao.shoppro.util.ItemBuilder.SkullTexture(it, UUID.randomUUID())
+                skullTexture = com.xbaimiao.easylib.util.ItemBuilder.SkullTexture(it, UUID.randomUUID())
             }
         }
     }
 
     override fun update(player: Player): ItemStack {
-        val item = buildItem(player).modifyLore {
+        val item = buildItem(player).modifyMeta<ItemMeta> {
+            val lore = this.lore ?: ArrayList()
             val newLore = ArrayList<String>()
-            for (line in this) {
-                newLore.add(line.replacePapi(player))
+            for (line in lore) {
+                newLore.add(line.replacePlaceholder(player))
             }
-            this.clear()
-            this.addAll(newLore)
+            this.lore = newLore
         }
         return item
     }

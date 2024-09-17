@@ -2,7 +2,8 @@ package com.github.xbaimiao.shoppro.api
 
 import com.github.xbaimiao.shoppro.ShopPro
 import com.github.xbaimiao.shoppro.core.item.ItemLoader
-import taboolib.platform.type.BukkitProxyEvent
+import com.xbaimiao.easylib.event.BukkitProxyEvent
+import org.bukkit.event.HandlerList
 
 /**
  * @author xbaimiao
@@ -18,4 +19,19 @@ class ShopProInitItemLoaderEvent(val plugin: ShopPro) : BukkitProxyEvent() {
         plugin.itemLoaderManager.itemLoaders.add(loader)
     }
 
+    override fun getHandlers(): HandlerList {
+        return BukkitProxyEvent.getHandlerList()
+    }
+
+    companion object {
+
+        @JvmField
+        val handlers = HandlerList()
+
+        @JvmStatic
+        fun getHandlerList(): HandlerList {
+            return handlers
+        }
+
+    }
 }

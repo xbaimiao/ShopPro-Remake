@@ -1,11 +1,12 @@
 package com.github.xbaimiao.shoppro.core.item
 
-import com.github.xbaimiao.shoppro.util.KetherUtil
-import com.github.xbaimiao.shoppro.util.Util.replacePapi
+import com.xbaimiao.easylib.bridge.replacePlaceholder
+import com.xbaimiao.easylib.chat.colored
+import com.xbaimiao.easylib.expression.expression
+import com.xbaimiao.easylib.util.buildItem
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import taboolib.module.chat.colored
 
 /**
  * @author 小白
@@ -22,17 +23,17 @@ interface KetherCondition {
         if (conditionScript == null) {
             return true
         }
-        return KetherUtil.instantKether(player, conditionScript!!).asBoolean(false)
+        return conditionScript!!.replacePlaceholder(player).expression().asBoolean()
     }
 
     fun conditionItem(player: Player): ItemStack {
         if (conditionIcon == null || conditionName == null) {
             return ItemStack(Material.AIR)
         }
-        return com.github.xbaimiao.shoppro.util.buildItem(conditionIcon!!) {
-            name = conditionName!!.colored().replacePapi(player)
+        return buildItem(conditionIcon!!) {
+            name = conditionName!!.colored().replacePlaceholder(player)
             conditionLore.forEach {
-                lore += it.colored().replacePapi(player)
+                lore += it.colored().replacePlaceholder(player)
             }
         }
     }

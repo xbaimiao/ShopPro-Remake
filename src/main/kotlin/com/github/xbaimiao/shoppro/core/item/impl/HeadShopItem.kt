@@ -4,12 +4,12 @@ import com.github.xbaimiao.shoppro.core.item.Item
 import com.github.xbaimiao.shoppro.core.item.ItemLoader
 import com.github.xbaimiao.shoppro.core.item.ShopItem
 import com.github.xbaimiao.shoppro.core.shop.Shop
+import com.xbaimiao.easylib.util.parseToMaterial
+import com.xbaimiao.easylib.xseries.XMaterial
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import taboolib.library.xseries.XMaterial
-import taboolib.library.xseries.parseToMaterial
 import java.util.*
 
 class HeadShopItem(
@@ -27,8 +27,8 @@ class HeadShopItem(
     }
 
     override fun vanillaItem(player: Player): ItemStack {
-        return com.github.xbaimiao.shoppro.util.buildItem(material) {
-            skullTexture = com.github.xbaimiao.shoppro.util.ItemBuilder.SkullTexture(head, UUID.randomUUID())
+        return com.xbaimiao.easylib.util.buildItem(material) {
+            skullTexture = com.xbaimiao.easylib.util.ItemBuilder.SkullTexture(head, UUID.randomUUID())
             damage = data
         }
     }
@@ -41,10 +41,10 @@ class HeadShopItem(
     }
 
     override fun buildItem(player: Player): ItemStack {
-        return com.github.xbaimiao.shoppro.util.buildItem(material) {
+        return com.xbaimiao.easylib.util.buildItem(material) {
             this.name = this@HeadShopItem.name
             this.lore.addAll(this@HeadShopItem.lore)
-            skullTexture = com.github.xbaimiao.shoppro.util.ItemBuilder.SkullTexture(head, UUID.randomUUID())
+            skullTexture = com.xbaimiao.easylib.util.ItemBuilder.SkullTexture(head, UUID.randomUUID())
             damage = data
         }
     }

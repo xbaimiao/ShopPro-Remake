@@ -2,14 +2,13 @@ package com.github.xbaimiao.shoppro.core.vault
 
 import com.github.xbaimiao.shoppro.util.Util
 import com.github.xbaimiao.shoppro.util.Util.format
-import com.github.xbaimiao.shoppro.util.Util.replacePapi
+import com.xbaimiao.easylib.bridge.replacePlaceholder
+import com.xbaimiao.easylib.util.info
+import com.xbaimiao.easylib.util.plugin
 import org.bukkit.Bukkit
 import org.bukkit.configuration.Configuration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
-import taboolib.common.platform.function.info
-import taboolib.platform.BukkitPlugin
-import taboolib.platform.compat.replacePlaceholder
 import java.io.File
 
 class DiyCurrency(configuration: Configuration) : Currency {
@@ -19,10 +18,10 @@ class DiyCurrency(configuration: Configuration) : Currency {
 
         fun load() {
             cache.clear()
-            val file = File(BukkitPlugin.getInstance().dataFolder, "currencys")
+            val file = File(plugin.dataFolder, "currencys")
             var listFile = file.listFiles()
             if (listFile == null || listFile.isEmpty()) {
-                BukkitPlugin.getInstance().saveResource("currencys/Diy1.yml", false)
+                plugin.saveResource("currencys/Diy1.yml", false)
                 listFile = file.listFiles()!!
             }
             listFile.forEach {
@@ -67,7 +66,7 @@ class DiyCurrency(configuration: Configuration) : Currency {
     }
 
     override fun getMoney(player: Player): Double {
-        return amountPapi.replacePapi(player).toDouble().format()
+        return amountPapi.replacePlaceholder(player).toDouble().format()
     }
 
     private fun replace(string: String, player: Player, num: Double): String {

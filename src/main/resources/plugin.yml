@@ -9,3 +9,9 @@ update-info: # inject
 depend-list: # inject
 relocate: # inject
 kotlin-version: # inject
+softdepend:
+  - 'PlaceholderAPI'
+  - 'Vault'
+  - 'MMOItems'
+  - 'Zaphkiel'
+  - 'NeigeItems'

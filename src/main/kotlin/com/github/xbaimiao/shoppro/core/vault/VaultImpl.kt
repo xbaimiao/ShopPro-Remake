@@ -1,15 +1,18 @@
 package com.github.xbaimiao.shoppro.core.vault
 
 import com.github.xbaimiao.shoppro.util.Util.format
+import com.xbaimiao.easylib.bridge.economy.EconomyManager
+import com.xbaimiao.easylib.util.EListener
+import com.xbaimiao.easylib.util.submit
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
-import taboolib.common.platform.event.EventPriority
-import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.submit
-import taboolib.platform.compat.VaultService
 import java.util.concurrent.ConcurrentLinkedQueue
 
-object VaultImpl : Currency {
+@EListener
+object VaultImpl : Currency, Listener {
 
     private val queue = ConcurrentLinkedQueue<ValueQueue>()
 
@@ -21,7 +24,7 @@ object VaultImpl : Currency {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun quit(event: PlayerQuitEvent) {
         val iterator = queue.iterator()
         var amount = 0.0
@@ -46,7 +49,7 @@ object VaultImpl : Currency {
     }
 
     private fun realGiveMoney(player: Player, double: Double) {
-        VaultService.economy!!.depositPlayer(player, double.format())
+        EconomyManager.vault.give(player, double.format())
     }
 
     override fun hasMoney(player: Player, double: Double): Boolean {
@@ -61,12 +64,12 @@ object VaultImpl : Currency {
         if (!hasMoney(player, double.format())) {
             return false
         }
-        VaultService.economy!!.withdrawPlayer(player, double.format())
+        EconomyManager.vault.take(player, double.format())
         return true
     }
 
     override fun getMoney(player: Player): Double {
-        return VaultService.economy!!.getBalance(player).format()
+        return EconomyManager.vault[player].format()
     }
 
 }

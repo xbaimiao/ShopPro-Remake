@@ -10,7 +10,7 @@ plugins {
 
 easylib {
     env {
-        mainClassName = "com.xbaimiao.shoppro.ShopPro"
+        mainClassName = "com.github.xbaimiao.shoppro.ShopPro"
         pluginName = "ShopPro"
         kotlinVersion = ktVersion
     }
@@ -31,13 +31,12 @@ easylib {
 //        relocate("com.zaxxer.hikari", "${project.group}.shadow.hikari")
 //    }
 
-//    val cloudOrmlite = true
-//    library("com.j256.ormlite:ormlite-core:6.1", cloudOrmlite)
-//    library("com.j256.ormlite:ormlite-jdbc:6.1", cloudOrmlite)
-//    relocate("com.j256.ormlite", "${project.group}.shadow.ormlite", cloudOrmlite)
+    val cloudOrmlite = true
+    library("com.j256.ormlite:ormlite-core:6.1", cloudOrmlite)
+    library("com.j256.ormlite:ormlite-jdbc:6.1", cloudOrmlite)
+    relocate("com.j256.ormlite", "${project.group}.shadow.ormlite", cloudOrmlite)
 
     relocate("com.xbaimiao.easylib", "${project.group}.easylib", false)
-    relocate("com.cryptomorin.xseries", "${project.group}.shadow.xseries", true)
     relocate("kotlin", "${project.group}.shadow.kotlin", true)
     relocate("kotlinx", "${project.group}.shadow.kotlinx", true)
 }
@@ -47,6 +46,7 @@ repositories {
     mavenCentral()
     maven("https://papermc.io/repo/repository/maven-public/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://r.irepo.space/maven/")
 }
 
 dependencies {
@@ -56,6 +56,11 @@ dependencies {
 //    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     compileOnly(fileTree("libs"))
+    compileOnly("public:Zaphkiel:1.0.0")
+    compileOnly("public:MythicMobs:4.14.1")
+    compileOnly("public:points:1.0.0")
+    compileOnly("pers.neige.neigeitems:NeigeItems:1.15.113")
+    compileOnly("public:MMOItems:6.9.4")
 }
 
 tasks {

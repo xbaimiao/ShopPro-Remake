@@ -12,7 +12,7 @@ abstract class Shop {
 
         companion object {
             fun formString(string: String): ShopType {
-                return ShopType.values().first { it.string == string }
+                return entries.first { it.string == string }
             }
         }
 

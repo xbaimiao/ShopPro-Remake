@@ -27,8 +27,8 @@ items:
     limit-player: 500
     # 物品金额
     price: 1
-    # 条件
-    condition: 'permission shop.sell.stone'
+    # 条件 现已不支持kether 只支持简单的变量比较
+    condition: '%player_name% == "TrMenu"'
     # 条件不满足无法显示，玩家买不了，但能看到的样子
     condition-icon: barrier
     condition-name: '条件不满足'

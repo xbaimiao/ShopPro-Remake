@@ -4,10 +4,10 @@ import com.github.xbaimiao.shoppro.core.shop.Shop
 import com.github.xbaimiao.shoppro.core.vault.Currency
 import com.github.xbaimiao.shoppro.core.vault.CurrencyType
 import com.github.xbaimiao.shoppro.core.vault.VaultImpl
+import com.xbaimiao.easylib.chat.colored
+import com.xbaimiao.easylib.util.parseToMaterial
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
-import taboolib.library.xseries.parseToMaterial
-import taboolib.module.chat.colored
 
 abstract class ItemLoader {
 

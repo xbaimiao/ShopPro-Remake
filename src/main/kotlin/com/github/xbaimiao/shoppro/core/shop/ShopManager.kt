@@ -1,8 +1,8 @@
 package com.github.xbaimiao.shoppro.core.shop
 
+import com.xbaimiao.easylib.util.info
+import com.xbaimiao.easylib.util.plugin
 import org.bukkit.configuration.file.YamlConfiguration
-import taboolib.common.platform.function.info
-import taboolib.platform.BukkitPlugin
 import java.io.File
 
 object ShopManager {
@@ -10,13 +10,13 @@ object ShopManager {
     val shops = ArrayList<Shop>()
 
     fun load() {
-        val fileDirectory = File(BukkitPlugin.getInstance().dataFolder, "shops")
+        val fileDirectory = File(plugin.dataFolder, "shops")
 
         var files = fileDirectory.listFiles()
         if (files == null || files.isEmpty()) {
-            BukkitPlugin.getInstance().saveResource("shops${File.separator}limit-buy.yml", false)
-            BukkitPlugin.getInstance().saveResource("shops${File.separator}limit-sell.yml", false)
-            BukkitPlugin.getInstance().saveResource("shops${File.separator}sell.yml", false)
+            plugin.saveResource("shops${File.separator}limit-buy.yml", false)
+            plugin.saveResource("shops${File.separator}limit-sell.yml", false)
+            plugin.saveResource("shops${File.separator}sell.yml", false)
             files = fileDirectory.listFiles()
         }
         files?.forEach { file ->

@@ -5,11 +5,11 @@ import com.github.xbaimiao.shoppro.core.shop.Shop
 import com.github.xbaimiao.shoppro.core.vault.Currency
 import com.github.xbaimiao.shoppro.util.Util.format
 import com.github.xbaimiao.shoppro.util.Util.howManyItems
-import com.github.xbaimiao.shoppro.util.Util.replacePapi
+import com.github.xbaimiao.shoppro.util.Util.modifyLore
+import com.xbaimiao.easylib.bridge.replacePlaceholder
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import taboolib.platform.util.modifyLore
 
 abstract class ShopItem(
     override val key: Char,
@@ -95,14 +95,14 @@ abstract class ShopItem(
 
     override fun update(player: Player): ItemStack {
         val playerLimit = if (shop.getType() == Shop.ShopType.BUY) {
-            ShopPro.database.getPlayerAlreadyData(player, this).buy
+            ShopPro.inst.database.getPlayerAlreadyData(player, this).buy
         } else {
-            ShopPro.database.getPlayerAlreadyData(player, this).sell
+            ShopPro.inst.database.getPlayerAlreadyData(player, this).sell
         }
         val serverLimit = if (shop.getType() == Shop.ShopType.BUY) {
-            ShopPro.database.getServerAlreadyData(this).buy
+            ShopPro.inst.database.getServerAlreadyData(this).buy
         } else {
-            ShopPro.database.getServerAlreadyData(this).sell
+            ShopPro.inst.database.getServerAlreadyData(this).sell
         }
         val item = buildItem(player).modifyLore {
             val newLore = ArrayList<String>()
@@ -121,7 +121,7 @@ abstract class ShopItem(
                     } * price).format()
                     newLine = newLine.replace("\${priceAll}", priceAll.toString())
                 }
-                newLore.add(newLine.replacePapi(player))
+                newLore.add(newLine.replacePlaceholder(player))
             }
             this.clear()
             this.addAll(newLore)

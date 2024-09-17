@@ -42,7 +42,7 @@ class ShopPro : EasyPlugin(), Listener {
         ShopManager.load()
         VaultImpl.startTask()
 
-        database = if (config.getBoolean("mysql.enable")) MysqlDatabase(config) else SQLiteDatabase()
+        database = if (config.getBoolean("mysql.enable")) MysqlDatabase(config.getConfigurationSection("mysql")!!) else SQLiteDatabase()
 
         Bukkit.getOnlinePlayers().forEach {
             database.loadPlayerData(it)

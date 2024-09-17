@@ -13,6 +13,7 @@ easylib {
         mainClassName = "com.github.xbaimiao.shoppro.ShopPro"
         pluginName = "ShopPro"
         kotlinVersion = ktVersion
+        pluginUpdateInfo = "支持1.21"
     }
     version = easylibVersion
 
@@ -27,9 +28,9 @@ easylib {
 //    library("org.apache.commons:commons-pool2:2.12.0", true){
 //        relocate("org.apache.commons.pool2", "${project.group}.shadow.pool2")
 //    }
-//    library("com.zaxxer:HikariCP:4.0.3", true) {
-//        relocate("com.zaxxer.hikari", "${project.group}.shadow.hikari")
-//    }
+    library("com.zaxxer:HikariCP:4.0.3", true) {
+        relocate("com.zaxxer.hikari", "${project.group}.shadow.hikari")
+    }
 
     val cloudOrmlite = true
     library("com.j256.ormlite:ormlite-core:6.1", cloudOrmlite)
@@ -92,5 +93,4 @@ tasks {
         }
         minimize()
     }
-
 }

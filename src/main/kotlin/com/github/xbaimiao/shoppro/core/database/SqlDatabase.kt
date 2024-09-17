@@ -1,57 +1,47 @@
 package com.github.xbaimiao.shoppro.core.database
 
+import com.github.xbaimiao.shoppro.ShopPro
+import com.github.xbaimiao.shoppro.core.database.dao.PlayerTable
+import com.github.xbaimiao.shoppro.core.database.dao.ServerTable
 import com.github.xbaimiao.shoppro.core.item.Item
 import com.github.xbaimiao.shoppro.core.item.ShopItem
 import com.github.xbaimiao.shoppro.core.item.impl.ItemsAdderShopItem
+import com.xbaimiao.easylib.database.Ormlite
+import com.xbaimiao.easylib.util.submit
 import org.bukkit.entity.Player
-import taboolib.common.platform.function.submitAsync
-import taboolib.module.database.Host
-import taboolib.module.database.Table
-import javax.sql.DataSource
+import java.time.LocalDate
 
-abstract class SqlDatabase : Database {
+abstract class SqlDatabase(ormlite: Ormlite) : Database {
 
-    abstract val host: Host<*>
-    abstract val playerTable: Table<*, *>
-    abstract val serverTable: Table<*, *>
-    abstract val dataSource: DataSource
-
-    val serverTableName = "server"
-    val playerTableName = "player"
-
-    val itemKeyLine = "item-key"
-    val itemMaterialLine = "item-material"
-    val itemCustomLine = "item-custom"
-    val dataLine = "data"
-
-    // ServerTable 无 User
-    val playerLine = "user"
+    val playerDao = ormlite.createDao(PlayerTable::class.java)!!
+    val serverDao = ormlite.createDao(ServerTable::class.java)!!
 
     private val playerAlreadyDataCache = HashMap<String, HashMap<String, LimitData>>()
 
+    init {
+        submit(async = true, delay = 20, period = 20) {
+            val currentDay = LocalDate.now().toEpochDay()
+            if (currentDay != ShopPro.inst.config.getLong("date")) {
+                reset()
+                ShopPro.inst.config.set("date", currentDay)
+                ShopPro.inst.saveConfig()
+            }
+        }
+    }
+
     override fun reset() {
-        serverTable.workspace(dataSource) {
-            executeUpdate("DELETE FROM $serverTableName;").run()
-        }.run()
-        playerTable.workspace(dataSource) {
-            executeUpdate("DELETE FROM $playerTableName;").run()
-        }.run()
+        playerDao.deleteBuilder().delete()
+        serverDao.deleteBuilder().delete()
     }
 
     override fun getServerAlreadyData(item: Item): LimitData {
-        return serverTable.workspace(dataSource) {
-            select {
-                where {
-                    itemKeyLine eq item.key.toString()
-                    itemMaterialLine eq item.material.toString()
-                    if (item is ItemsAdderShopItem) {
-                        itemCustomLine eq item.custom
-                    }
-                }
-            }
-        }.firstOrNull {
-            LimitData.formString(this.getString(dataLine))
-        } ?: LimitData.ofNull()
+        val queryBuilder = serverDao.queryBuilder()
+        val where = queryBuilder.where().eq("item-key", item.toCacheKey())
+        val first = where.queryForFirst()
+        if (first != null) {
+            return LimitData.formString(first.data)
+        }
+        return LimitData.ofNull()
     }
 
     private fun Item.toCacheKey(): String {
@@ -67,21 +57,11 @@ abstract class SqlDatabase : Database {
             return cache[cacheKey]!!
         }
 
-        val databaseLimitData = playerTable.workspace(dataSource) {
-            select {
-                where {
-                    playerLine eq player.uniqueId.toString()
-                    itemKeyLine eq item.key.toString()
-                    itemMaterialLine eq item.material.toString()
-                    if (item is ItemsAdderShopItem) {
-                        itemCustomLine eq item.custom
-                    }
-                }
-            }
-        }.firstOrNull {
-            LimitData.formString(this.getString(dataLine))
-        } ?: LimitData.ofNull()
+        val queryBuilder = playerDao.queryBuilder()
+        queryBuilder.where().eq("item-key", item.toCacheKey())
+            .and().eq("user", player.uniqueId.toString())
 
+        val databaseLimitData = queryBuilder.queryForFirst()?.let { LimitData.formString(it.data) } ?: LimitData.ofNull()
         cache[cacheKey] = databaseLimitData
         return databaseLimitData
     }
@@ -91,45 +71,17 @@ abstract class SqlDatabase : Database {
         val cacheKey = item.toCacheKey()
         cache[cacheKey] = amount
 
-        submitAsync {
-            if (playerTable.workspace(dataSource) {
-                    select {
-                        where {
-                            playerLine eq player.uniqueId.toString()
-                            itemKeyLine eq item.key.toString()
-                            itemMaterialLine eq item.material.toString()
-                            if (item is ItemsAdderShopItem) {
-                                itemCustomLine eq item.custom
-                            }
-                        }
-                    }
-                }.find()) {
-                playerTable.workspace(dataSource) {
-                    update {
-                        where {
-                            playerLine eq player.uniqueId.toString()
-                            itemKeyLine eq item.key.toString()
-                            itemMaterialLine eq item.material.toString()
-                            if (item is ItemsAdderShopItem) {
-                                itemCustomLine eq item.custom
-                            }
-                        }
-                        set(dataLine, amount.toString())
-                    }
-                }.run()
+        submit(async = true) {
+            val old = playerDao.queryForEq("item-key", item.toCacheKey())?.firstOrNull()
+            if (old != null) {
+                old.data = amount.toString()
+                playerDao.update(old)
             } else {
-                val custom = if (item is ItemsAdderShopItem) item.custom else 0
-                playerTable.workspace(dataSource) {
-                    insert {
-                        value(
-                            item.key.toString(),
-                            item.material.toString(),
-                            custom,
-                            amount.toString(),
-                            player.uniqueId.toString()
-                        )
-                    }
-                }.run()
+                playerDao.create(PlayerTable().apply {
+                    itemKey = item.toCacheKey()
+                    data = amount.toString()
+                    user = player.uniqueId.toString()
+                })
             }
         }
     }
@@ -140,36 +92,15 @@ abstract class SqlDatabase : Database {
     }
 
     override fun setServerAlreadyData(item: Item, amount: LimitData) {
-        if (serverTable.workspace(dataSource) {
-                select {
-                    where {
-                        itemKeyLine eq item.key.toString()
-                        itemMaterialLine eq item.material.toString()
-                        if (item is ItemsAdderShopItem) {
-                            itemCustomLine eq item.custom
-                        }
-                    }
-                }
-            }.find()) {
-            serverTable.workspace(dataSource) {
-                update {
-                    where {
-                        itemKeyLine eq item.key.toString()
-                        itemMaterialLine eq item.material.toString()
-                        if (item is ItemsAdderShopItem) {
-                            itemCustomLine eq item.custom
-                        }
-                    }
-                    set(dataLine, amount.toString())
-                }
-            }.run()
+        val old = serverDao.queryForEq("item-key", item.toCacheKey())?.firstOrNull()
+        if (old != null) {
+            old.data = amount.toString()
+            serverDao.update(old)
         } else {
-            val custom = if (item is ItemsAdderShopItem) item.custom else 0
-            serverTable.workspace(dataSource) {
-                insert {
-                    value(item.key.toString(), item.material.toString(), custom, amount.toString())
-                }
-            }.run()
+            serverDao.create(ServerTable().apply {
+                itemKey = item.toCacheKey()
+                data = amount.toString()
+            })
         }
     }
 

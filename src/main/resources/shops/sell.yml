@@ -32,7 +32,7 @@ items:
       - '&a&l右键 &f&l出售一组'
       - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
       - ''
-      - '&a&l收购价格 &c&l${price}'
+      - '&a&l收购价格 &c&l{price}'
     # 关闭此选项 可只执行命令 不给原版物品
     vanilla: false
     commands:
@@ -46,7 +46,7 @@ items:
       - '&a&l右键 &f&l出售一组'
       - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
       - ''
-      - '&a&l收购价格 &c&l${price}'
+      - '&a&l收购价格 &c&l{price}'
   E:
     material: GOLD_INGOT
     name: '&f&l金锭'
@@ -56,7 +56,7 @@ items:
       - '&a&l右键 &f&l出售一组'
       - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
       - ''
-      - '&a&l收购价格 &c&l${price}'
+      - '&a&l收购价格 &c&l{price}'
   R:
     material: COPPER_INGOT
     name: '&f&l铜锭'
@@ -66,7 +66,7 @@ items:
       - '&a&l右键 &f&l出售一组'
       - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
       - ''
-      - '&a&l收购价格 &c&l${price}'
+      - '&a&l收购价格 &c&l{price}'
   T:
     material: DIAMOND
     name: '&f&l钻石'
@@ -76,7 +76,7 @@ items:
       - '&a&l右键 &f&l出售一组'
       - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
       - ''
-      - '&a&l收购价格 &c&l${price}'
+      - '&a&l收购价格 &c&l{price}'
   Y:
     material: BREAD
     name: '&f&l面包'
@@ -86,7 +86,7 @@ items:
       - '&a&l右键 &f&l出售一组'
       - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
       - ''
-      - '&a&l收购价格 &c&l${price}'
+      - '&a&l收购价格 &c&l{price}'
   U:
     material: CAKE
     name: '&f&l蛋糕'
@@ -96,7 +96,7 @@ items:
       - '&a&l右键 &f&l出售一组'
       - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
       - ''
-      - '&a&l收购价格 &c&l${price}'
+      - '&a&l收购价格 &c&l{price}'
   I:
     material: PUMPKIN_PIE
     name: '&f&l南瓜派'
@@ -106,7 +106,7 @@ items:
       - '&a&l右键 &f&l出售一组'
       - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
       - ''
-      - '&a&l收购价格 &c&l${price}'
+      - '&a&l收购价格 &c&l{price}'
   O:
     material: MUSHROOM_STEW
     name: '&f&l蘑菇煲'
@@ -116,7 +116,7 @@ items:
       - '&a&l右键 &f&l出售一组'
       - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
       - ''
-      - '&a&l收购价格 &c&l${price}'
+      - '&a&l收购价格 &c&l{price}'
 
   # itemsadder 物品
   P:
@@ -128,4 +128,4 @@ items:
       - '&a&l右键 &f&l出售一组'
       - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
       - ''
-      - '&a&l收购价格 &c&l${price}'
+      - '&a&l收购价格 &c&l{price}'

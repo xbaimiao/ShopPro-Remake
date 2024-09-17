@@ -107,14 +107,14 @@ abstract class ShopItem(
         val item = buildItem(player).modifyLore {
             val newLore = ArrayList<String>()
             for (line in this) {
-                var newLine = line.replace("\${name}", name)
-                    .replace("\${price}", price.toString())
-                    .replace("\${money}", currency.getMoney(player).toString())
-                    .replace("\${price64}", (price * 64).toString())
-                    .replace("\${limit}", getLimitPlayer(player).toString())
-                    .replace("\${allLimit}", limitServer.toString())
-                    .replace("\${limit-player}", (getLimitPlayer(player) - playerLimit).toString())
-                    .replace("\${limit-server}", (limitServer - serverLimit).toString())
+                var newLine = line.replace("\${name}", name).replace("{name}", name)
+                    .replace("\${price}", price.toString()).replace("{price}", price.toString())
+                    .replace("\${money}", currency.getMoney(player).toString()).replace("{money}", currency.getMoney(player).toString())
+                    .replace("\${price64}", (price * 64).toString()).replace("{price64}", (price * 64).toString())
+                    .replace("\${limit}", getLimitPlayer(player).toString()).replace("{limit}", getLimitPlayer(player).toString())
+                    .replace("\${allLimit}", limitServer.toString()).replace("{allLimit}", limitServer.toString())
+                    .replace("\${limit-player}", (getLimitPlayer(player) - playerLimit).toString()).replace("{limit-player}", (getLimitPlayer(player) - playerLimit).toString())
+                    .replace("\${limit-server}", (limitServer - serverLimit).toString()).replace("{limit-server}", (limitServer - serverLimit).toString())
                 if (shop.getType() == Shop.ShopType.SELL) {
                     val priceAll = (player.inventory.howManyItems {
                         this@ShopItem.equal(it)

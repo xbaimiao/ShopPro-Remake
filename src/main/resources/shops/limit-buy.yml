@@ -37,18 +37,18 @@ items:
     # 物品金额
     price: 2
     lore:
-      - '&e| &7这里可以购买&6 ${name}'
-      - '&e| &7购买单价 &6${price}'
-      - '&e| &7你的余额 &6${money}'
+      - '&e| &7这里可以购买&6 {name}'
+      - '&e| &7购买单价 &6{price}'
+      - '&e| &7你的余额 &6{money}'
       - ''
       - '&e|&6 左击 &7购买 &6单个'
-      - '&e|&6 右击 &7购买 &6一组 &7需要 &6${price64}'
+      - '&e|&6 右击 &7购买 &6一组 &7需要 &6{price64}'
       - ''
       - '&e| &7限买公示:'
-      - '&e| &7每人限制购买: ${limit}'
-      - '&e| &7全服限制购买: ${allLimit}'
-      - '&e| &7您已购买: ${limit-player}'
-      - '&e| &7全服剩余: ${limit-server}'
+      - '&e| &7每人限制购买: {limit}'
+      - '&e| &7全服限制购买: {allLimit}'
+      - '&e| &7您已购买: {limit-player}'
+      - '&e| &7全服剩余: {limit-server}'
   # itemsadder 物品购买示例
   # 需要使用IA:前缀 中间为物品材质 后面为物品customData
   B:
@@ -61,22 +61,22 @@ items:
     # 物品金额
     price: 2
     lore:
-      - '&e| &7这里可以购买&6 ${name}'
-      - '&e| &7购买单价 &6${price}'
-      - '&e| &7你的余额 &6${money}'
+      - '&e| &7这里可以购买&6 {name}'
+      - '&e| &7购买单价 &6{price}'
+      - '&e| &7你的余额 &6{money}'
       - ''
       - '&e|&6 左击 &7购买 &6单个'
-      - '&e|&6 右击 &7购买 &6一组 &7需要 &6${price64}'
+      - '&e|&6 右击 &7购买 &6一组 &7需要 &6{price64}'
       - ''
       - '&e| &7限买公示:'
-      - '&e| &7每人限制购买: ${limit}'
-      - '&e| &7全服限制购买: ${allLimit}'
-      - '&e| &7您已购买: ${limit-player}'
-      - '&e| &7全服剩余: ${limit-server}'
+      - '&e| &7每人限制购买: {limit}'
+      - '&e| &7全服限制购买: {allLimit}'
+      - '&e| &7您已购买: {limit-player}'
+      - '&e| &7全服剩余: {limit-server}'
     # 关闭此选项 可只执行命令 不给原版物品
     vanilla: false
     commands:
-      - '[console] ia give %player% 物品 ${amount}'
+      - '[console] ia give %player% 物品 {amount}'
   # Zaphkiel物品示范
   C:
     material: 'Zaphkiel:example_sword'
@@ -88,18 +88,18 @@ items:
     # 物品金额
     price: 2
     lore:
-      - '&e| &7这里可以购买&6 ${name}'
-      - '&e| &7购买单价 &6${price}'
-      - '&e| &7你的余额 &6${money}'
+      - '&e| &7这里可以购买&6 {name}'
+      - '&e| &7购买单价 &6{price}'
+      - '&e| &7你的余额 &6{money}'
       - ''
       - '&e|&6 左击 &7购买 &6单个'
-      - '&e|&6 右击 &7购买 &6一组 &7需要 &6${price64}'
+      - '&e|&6 右击 &7购买 &6一组 &7需要 &6{price64}'
       - ''
       - '&e| &7限买公示:'
-      - '&e| &7每人限制购买: ${limit}'
-      - '&e| &7全服限制购买: ${allLimit}'
-      - '&e| &7您已购买: ${limit-player}'
-      - '&e| &7全服剩余: ${limit-server}'
+      - '&e| &7每人限制购买: {limit}'
+      - '&e| &7全服限制购买: {allLimit}'
+      - '&e| &7您已购买: {limit-player}'
+      - '&e| &7全服剩余: {limit-server}'
   # MM物品示范
   D:
     material: 'MM:KingsCrown'
@@ -111,15 +111,15 @@ items:
     # 物品金额
     price: 2
     lore:
-      - '&e| &7这里可以购买&6 ${name}'
-      - '&e| &7购买单价 &6${price}'
-      - '&e| &7你的余额 &6${money}'
+      - '&e| &7这里可以购买&6 {name}'
+      - '&e| &7购买单价 &6{price}'
+      - '&e| &7你的余额 &6{money}'
       - ''
       - '&e|&6 左击 &7购买 &6单个'
-      - '&e|&6 右击 &7购买 &6一组 &7需要 &6${price64}'
+      - '&e|&6 右击 &7购买 &6一组 &7需要 &6{price64}'
       - ''
       - '&e| &7限买公示:'
-      - '&e| &7每人限制购买: ${limit}'
-      - '&e| &7全服限制购买: ${allLimit}'
-      - '&e| &7您已购买: ${limit-player}'
-      - '&e| &7全服剩余: ${limit-server}'
+      - '&e| &7每人限制购买: {limit}'
+      - '&e| &7全服限制购买: {allLimit}'
+      - '&e| &7您已购买: {limit-player}'
+      - '&e| &7全服剩余: {limit-server}'

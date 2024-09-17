@@ -31,7 +31,7 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
             clickCache[player] = System.currentTimeMillis()
             return true
         }
-        if (System.currentTimeMillis() - lastClick < 200) {
+        if (System.currentTimeMillis() - lastClick < 50) {
             return false
         }
         clickCache[player] = System.currentTimeMillis()
@@ -165,6 +165,7 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
                 }
             }
         }
+        basic.open()
     }
 
     override fun getItems(): Collection<Item> {

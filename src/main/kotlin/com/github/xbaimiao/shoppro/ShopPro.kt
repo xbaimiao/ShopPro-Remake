@@ -75,7 +75,7 @@ class ShopPro : EasyPlugin(), Listener {
             database.releasePlayerData(it)
         }
 
-        database = if (config.getBoolean("mysql.enable")) MysqlDatabase(config) else SQLiteDatabase()
+        database = if (config.getBoolean("mysql.enable")) MysqlDatabase(config.getConfigurationSection("mysql")!!) else SQLiteDatabase()
         Bukkit.getOnlinePlayers().forEach {
             database.loadPlayerData(it)
         }

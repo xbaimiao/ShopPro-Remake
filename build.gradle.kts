@@ -13,7 +13,7 @@ easylib {
         mainClassName = "com.github.xbaimiao.shoppro.ShopPro"
         pluginName = "ShopPro"
         kotlinVersion = ktVersion
-        pluginUpdateInfo = "修复reload命令"
+        pluginUpdateInfo = "修复玩家个人限购数据问题"
     }
     version = easylibVersion
 

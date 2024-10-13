@@ -7,6 +7,7 @@ import com.github.xbaimiao.shoppro.core.item.Item
 import com.github.xbaimiao.shoppro.core.item.ShopItem
 import com.github.xbaimiao.shoppro.core.item.impl.ItemsAdderShopItem
 import com.xbaimiao.easylib.database.Ormlite
+import com.xbaimiao.easylib.database.dsl.wrapper.select
 import com.xbaimiao.easylib.util.submit
 import org.bukkit.entity.Player
 import java.time.LocalDate
@@ -57,11 +58,11 @@ abstract class SqlDatabase(ormlite: Ormlite) : Database {
             return cache[cacheKey]!!
         }
 
-        val queryBuilder = playerDao.queryBuilder()
-        queryBuilder.where().eq("item-key", item.toCacheKey())
-            .and().eq("user", player.uniqueId.toString())
+        val databaseLimitData = playerDao.select {
+            PlayerTable::itemKey eq item.toCacheKey()
+            PlayerTable::user eq player.uniqueId.toString()
+        }?.let { LimitData.formString(it.data) } ?: LimitData.ofNull()
 
-        val databaseLimitData = queryBuilder.queryForFirst()?.let { LimitData.formString(it.data) } ?: LimitData.ofNull()
         cache[cacheKey] = databaseLimitData
         return databaseLimitData
     }
@@ -72,7 +73,10 @@ abstract class SqlDatabase(ormlite: Ormlite) : Database {
         cache[cacheKey] = amount
 
         submit(async = true) {
-            val old = playerDao.queryForEq("item-key", item.toCacheKey())?.firstOrNull()
+            val old = playerDao.select {
+                PlayerTable::itemKey eq item.toCacheKey()
+                PlayerTable::user eq player.uniqueId.toString()
+            }
             if (old != null) {
                 old.data = amount.toString()
                 playerDao.update(old)

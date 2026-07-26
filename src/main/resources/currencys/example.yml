@@ -1,0 +1,23 @@
+# 自定义货币示例
+#
+# 当 Vault 和点券都不够用时 可以在这里接入任意用命令操作的货币
+# 每个 yml 文件一种货币 文件名随意 靠下面的 name 字段识别
+#
+# 在商店的商品里这样引用:
+#   A:
+#     material: STONE
+#     currency: "示例货币"
+#
+# 需要安装 PlaceholderAPI
+
+# 货币的识别名 商品的 currency 字段填这个
+name: "示例货币"
+
+# 扣除货币的命令 %player% 为玩家名 %num% 为数量
+take-command: "eco take %player% %num%"
+
+# 给予货币的命令 %player% 为玩家名 %num% 为数量
+give-command: "eco give %player% %num%"
+
+# 读取余额的 PAPI 变量 必须能解析成数字
+balance-placeholder: "%vault_eco_balance%"

@@ -1,67 +1,92 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 val ktVersion: String by project
 val easylibVersion: String by project
+val neigeItemsVersion: String by project
+val spigotApiVersion: String by project
 
 plugins {
     java
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
     id("com.xbaimiao.easylib")
     kotlin("jvm")
 }
 
+// 中文写在这里而不是 gradle.properties
+// Properties 规范按 ISO-8859-1 读取 .properties, UTF-8 存的中文会被读成乱码
+// 最终在 plugin.yml 里被 SnakeYAML 输出成 !!binary base64
+description = "支持 CraftEngine 的多货币限购商店"
+
+// shadowJar 的 relocate 目标必须用这个常量而不是 project.group
+// easylib-gradle-plugin 1.3.2 的 generatePluginYml 有个副作用
+// 会把 project.group 覆盖成字面量 "build", 而 shadowJar 配置求值晚于该副作用
+// 直接用 ${project.group} 会把类 relocate 到 build/shadow/ 目录下
+val shadowBasePackage = "com.xbaimiao.shoppro"
+
 easylib {
     env {
-        mainClassName = "com.github.xbaimiao.shoppro.ShopPro"
+        mainClassName = "$shadowBasePackage.ShopPro"
         pluginName = "ShopPro"
         kotlinVersion = ktVersion
-        pluginUpdateInfo = "修复BUG"
+        authors.add("xbaimiao")
+        // 1.18.2 起支持, 高版本靠 Bukkit 向后兼容运行
+        apiVersion = "1.18"
+        softDepend.add("PlaceholderAPI")
+        softDepend.add("Vault")
+        softDepend.add("PlayerPoints")
+        softDepend.add("CraftEngine")
+        softDepend.add("MythicMobs")
+        softDepend.add("NeigeItems")
+        commands.add(com.xbaimiao.easylib.Env.Command("shoppro", "ShopPro 主命令", listOf("shop")))
     }
     version = easylibVersion
 
-//    library("de.tr7zw:item-nbt-api:2.12.3", true){
-//        relocate("de.tr7zw.changeme.nbtapi", "${project.group}.shadow.itemnbtapi")
-//        repo("https://repo.codemc.org/repository/maven-public/")
-//    }
-//    library("redis.clients:jedis:5.0.1", true) {
-//        relocate("redis.clients.jedis", "${project.group}.shadow.redis")
-//    }
-//    // jedis需要
-//    library("org.apache.commons:commons-pool2:2.12.0", true){
-//        relocate("org.apache.commons.pool2", "${project.group}.shadow.pool2")
-//    }
-    library("com.zaxxer:HikariCP:4.0.3", true) {
-        relocate("com.zaxxer.hikari", "${project.group}.shadow.hikari")
-    }
+    library("com.zaxxer:HikariCP:4.0.3", true)
 
-    val cloudOrmlite = true
-    library("com.j256.ormlite:ormlite-core:6.1", cloudOrmlite)
-    library("com.j256.ormlite:ormlite-jdbc:6.1", cloudOrmlite)
-    relocate("com.j256.ormlite", "${project.group}.shadow.ormlite", cloudOrmlite)
+    library("com.j256.ormlite:ormlite-core:6.1", true)
+    library("com.j256.ormlite:ormlite-jdbc:6.1", true)
 
-    relocate("com.xbaimiao.easylib", "${project.group}.easylib", false)
-    relocate("kotlin", "${project.group}.shadow.kotlin", true)
-    relocate("kotlinx", "${project.group}.shadow.kotlinx", true)
+    relocate("com.j256.ormlite", "$shadowBasePackage.shadow.ormlite", true)
+    relocate("com.zaxxer.hikari", "$shadowBasePackage.shadow.hikari", true)
+    relocate("com.xbaimiao.easylib", "$shadowBasePackage.easylib", false)
+    relocate("kotlin", "$shadowBasePackage.shadow.kotlin", true)
+    relocate("kotlinx", "$shadowBasePackage.shadow.kotlinx", true)
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven("https://papermc.io/repo/repository/maven-public/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    // NeigeItems
     maven("https://r.irepo.space/maven/")
 }
 
 dependencies {
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    compileOnly("com.github.cryptomorin:XSeries:10.0.0")
     compileOnly(kotlin("stdlib-jdk8"))
-//    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
-    compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
+    // 按 1.18.2 编译, 靠 Bukkit 向后兼容跑到 26.x
+    // paper-api 26.x 的 Gradle 元数据要求 jvm.version=25, 会锁死 JDK 版本, 因此不用它
+    compileOnly("org.spigotmc:spigot-api:$spigotApiVersion")
+    // 锁在 1.15.113: 1.17.24 及之后是用预发布版 Kotlin 2.0.0 编的
+    // 引用它会要求整个工程开 -Xskip-prerelease-check, 那会把 ShopPro 自己的类
+    // 也标成 pre-release, 导致别的插件挂钩 ShopPro API 时一并报错
+    // 1.15.113 的 isNiItem/getItemStack/ItemInfo API 和新版一致, 运行时兼容新版 NI
+    compileOnly("pers.neige.neigeitems:NeigeItems:$neigeItemsVersion")
+    // CraftEngine 和 MythicMobs 走 libs/ 本地 jar
+    // repo.momirealms.net 对 JVM 的 TLS 指纹会被网络中间设备 reset(curl 正常 Gradle 失败)
     compileOnly(fileTree("libs"))
-    compileOnly("public:Zaphkiel:1.0.0")
-    compileOnly("public:MythicMobs:4.14.1")
-    compileOnly("public:points:1.0.0")
-    compileOnly("pers.neige.neigeitems:NeigeItems:1.15.113")
-    compileOnly("public:MMOItems:6.9.4")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+kotlin {
+    jvmToolchain(17)
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
 }
 
 tasks {
@@ -75,6 +100,9 @@ tasks {
         outputs.upToDateWhen { false }
     }
     shadowJar {
+        // easylib-gradle-plugin 只给 jar 挂了这个依赖, 没给 shadowJar 挂
+        // Shadow 9.x 对隐式任务依赖校验更严, 不显式声明会构建失败
+        dependsOn("generatePluginYml")
         dependencies {
             easylib.library.forEach {
                 if (it.cloud) {
@@ -88,7 +116,7 @@ tasks {
             exclude(dependency("org.jetbrains.kotlinx:"))
         }
         archiveClassifier.set("")
-        easylib.getAllRelocate().forEach {
+        easylib.relocate.forEach {
             relocate(it.pattern, it.replacement)
         }
         minimize()

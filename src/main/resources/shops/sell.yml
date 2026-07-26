@@ -1,12 +1,18 @@
+# 收购商店示例 玩家把背包里的东西卖给系统
+#
+# material 写法和变量说明见 buy.yml
+# 收购商店的 lore 额外支持 {priceAll} 变量 表示背包里该物品全卖掉能得多少钱
+
 type: sell
-name: "自带收购商店"
+
+name: "默认收购商店"
+
 title: "系统收购商店"
 
-slots:
+layout:
   - 'NNNNNNNNN'
-  - 'NQWERTYUN'
-  - 'NIOP    N'
-  - 'NNNNNNNNX'
+  - 'NABC    N'
+  - 'NNNNNNNNN'
 
 items:
   N:
@@ -15,117 +21,78 @@ items:
     lore:
       - ' '
     is-commodity: false
-  X:
-    material: ARROW
-    name: '&f下一页'
-    lore:
-      - '&f点击前往下一页'
-    is-commodity: false
-    commands:
-      - '[open] 默认收购商店'
-  Q:
-    material: COAL
-    name: '&f&l煤炭'
-    price: 0.5
-    lore:
-      - '&a&l左键 &f&l出售单个'
-      - '&a&l右键 &f&l出售一组'
-      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
-      - ''
-      - '&a&l收购价格 &c&l{price}'
-    # 关闭此选项 可只执行命令 不给原版物品
-    vanilla: false
-    commands:
-      - '[console] give %player% COAL'
-  W:
-    material: IRON_INGOT
-    name: '&f&l铁锭'
-    price: 10
-    lore:
-      - '&a&l左键 &f&l出售单个'
-      - '&a&l右键 &f&l出售一组'
-      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
-      - ''
-      - '&a&l收购价格 &c&l{price}'
-  E:
-    material: GOLD_INGOT
-    name: '&f&l金锭'
-    price: 13
-    lore:
-      - '&a&l左键 &f&l出售单个'
-      - '&a&l右键 &f&l出售一组'
-      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
-      - ''
-      - '&a&l收购价格 &c&l{price}'
-  R:
-    material: COPPER_INGOT
-    name: '&f&l铜锭'
-    price: 12
-    lore:
-      - '&a&l左键 &f&l出售单个'
-      - '&a&l右键 &f&l出售一组'
-      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
-      - ''
-      - '&a&l收购价格 &c&l{price}'
-  T:
-    material: DIAMOND
-    name: '&f&l钻石'
-    price: 20
-    lore:
-      - '&a&l左键 &f&l出售单个'
-      - '&a&l右键 &f&l出售一组'
-      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
-      - ''
-      - '&a&l收购价格 &c&l{price}'
-  Y:
-    material: BREAD
-    name: '&f&l面包'
-    price: 3
-    lore:
-      - '&a&l左键 &f&l出售单个'
-      - '&a&l右键 &f&l出售一组'
-      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
-      - ''
-      - '&a&l收购价格 &c&l{price}'
-  U:
-    material: CAKE
-    name: '&f&l蛋糕'
-    price: 30
-    lore:
-      - '&a&l左键 &f&l出售单个'
-      - '&a&l右键 &f&l出售一组'
-      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
-      - ''
-      - '&a&l收购价格 &c&l{price}'
-  I:
-    material: PUMPKIN_PIE
-    name: '&f&l南瓜派'
-    price: 4
-    lore:
-      - '&a&l左键 &f&l出售单个'
-      - '&a&l右键 &f&l出售一组'
-      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
-      - ''
-      - '&a&l收购价格 &c&l{price}'
-  O:
-    material: MUSHROOM_STEW
-    name: '&f&l蘑菇煲'
-    price: 2
-    lore:
-      - '&a&l左键 &f&l出售单个'
-      - '&a&l右键 &f&l出售一组'
-      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
-      - ''
-      - '&a&l收购价格 &c&l{price}'
 
-  # itemsadder 物品
-  P:
-    material: 'IA:PAPER:10007'
-    name: 'itemsadder'
-    price: 20
+  # 原版物品 带 lore 的物品不会被收购
+  # 免得各种插件生成的特殊物品被当成普通材质贱卖
+  A:
+    material: STONE
+    name: '石头'
+    price: 1
+    limit-server: 5000
+    limit-player: 500
+    # 解锁条件 支持简单的表达式比较 和 PAPI 变量
+    # 不满足时该格子显示成下面的 condition-icon 且不能交易
+    condition: '%player_level% >= 10'
+    condition-icon: BARRIER
+    condition-name: '&c未解锁'
+    condition-lore:
+      - '&7需要等级达到 &e10 &7级'
     lore:
-      - '&a&l左键 &f&l出售单个'
-      - '&a&l右键 &f&l出售一组'
-      - '&a&lShift + 右键 &f&l出售背包所有可出售物品'
+      - '&e| &7这里可以出售你背包里面的&6 {name}'
+      - '&e| &7收购单价 &6{price}'
+      - '&e| &7你的余额 &6{money}'
       - ''
-      - '&a&l收购价格 &c&l{price}'
+      - '&e|&6 左击 &7出售 &6单个'
+      - '&e|&6 右击 &7出售 &6一组 &7获得 &6{price64}'
+      - '&e|&6 Shift + 右击 &7出售 &6背包所有 &7获得 &6{priceAll}'
+      - ''
+      - '&e| &7限售公示:'
+      - '&e| &7每人限制出售: {limit}'
+      - '&e| &7全服限制出售: {allLimit}'
+      - '&e| &7您还可出售: {limit-player}'
+      - '&e| &7全服剩余: {limit-server}'
+
+  # CraftEngine 物品收购
+  # 靠 CE 自己的物品 ID 识别 玩家背包里的 CE 物品能准确认出来
+  B:
+    material: 'CE:default:ruby'
+    name: '&c红宝石'
+    price: 50
+    limit-server: 5000
+    limit-player: 500
+    lore:
+      - '&e| &7这里可以出售你背包里面的&6 {name}'
+      - '&e| &7收购单价 &6{price}'
+      - '&e| &7你的余额 &6{money}'
+      - ''
+      - '&e|&6 左击 &7出售 &6单个'
+      - '&e|&6 右击 &7出售 &6一组 &7获得 &6{price64}'
+      - '&e|&6 Shift + 右击 &7出售 &6背包所有 &7获得 &6{priceAll}'
+      - ''
+      - '&e| &7限售公示:'
+      - '&e| &7每人限制出售: {limit}'
+      - '&e| &7全服限制出售: {allLimit}'
+      - '&e| &7您还可出售: {limit-player}'
+      - '&e| &7全服剩余: {limit-server}'
+
+  # 自定义头颅图标
+  # material 是图标的头颅材质值 item 才是实际收购的物品
+  C:
+    material: 'HEAD:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWU4ZTY3MGE3OWI2MTYzMzRiYzFmYjkxMzkxMzJmYjM1YzU3ZGRhNjk3NWFmOWNlNDgzMzNlOTRhYTZjOTU3MyJ9fX0='
+    item: COAL
+    name: '&8煤炭'
+    price: 0.1
+    limit-server: 50000
+    limit-player: 5000
+    lore:
+      - '&e· &7出售你背包里面的&6 {name}'
+      - '&e· &7收购单价 &6{price}'
+      - '&e· &7你的余额 &6{money}'
+      - ''
+      - '&e· &6左击 &7出售 &6单个'
+      - '&e· &6右击 &7出售 &6一组 &7获得 &6{price64}'
+      - '&e· &6Shift + 右击 &7出售 &6背包所有 &7获得 &6{priceAll}'
+      - ''
+      - '&e· &7每人限制出售: {limit}'
+      - '&e· &7全服限制出售: {allLimit}'
+      - '&e· &7您还可出售: {limit-player} &8| &7全服剩余: {limit-server}'

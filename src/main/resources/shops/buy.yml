@@ -1,0 +1,125 @@
+# 出售商店示例 玩家花钱从这里买东西
+#
+# 支持的 material 写法:
+#   STONE                 原版材质
+#   CE:命名空间:路径       CraftEngine 物品 例如 CE:default:ruby
+#   MM:物品ID             MythicMobs 物品
+#   NeigeItems:物品ID     NeigeItems 物品
+#   HEAD:材质值           自定义头颅图标 需配合 item 字段指定实际交易的材质
+#
+# lore 里可用的变量 {x} 和 ${x} 两种写法都支持:
+#   {name}          商品名
+#   {price}         单价
+#   {price64}       一组的价格
+#   {money}         玩家当前余额
+#   {limit}         每人限额
+#   {allLimit}      全服限额
+#   {limit-player}  该玩家剩余可交易数量
+#   {limit-server}  全服剩余可交易数量
+
+# buy 为出售商店 玩家掏钱
+# sell 为收购商店 玩家赚钱
+type: buy
+
+# 商店标识 命令和权限里用这个名字
+name: "默认出售商店"
+
+# 界面标题 支持 PAPI 变量
+title: "系统出售商店"
+
+# 物品摆放布局 每行 9 个字符 对应下面 items 里的节点名
+layout:
+  - 'NNNNNNNNN'
+  - 'NABC    N'
+  - 'NNNNNNNNN'
+
+items:
+  # 边框装饰 is-commodity 为 false 表示不可交易
+  N:
+    material: GLASS_PANE
+    name: ' '
+    lore:
+      - ' '
+    is-commodity: false
+
+  # 原版物品
+  A:
+    material: STONE
+    name: '石头'
+    # 指定货币 不填默认走 Vault
+    # 内置 vault 和 points(PlayerPoints点券)
+    # 也可以填 currencys 目录下自定义货币的名字
+    currency: points
+    # 单价
+    price: 2
+    # 全服每日限购
+    limit-server: 5000
+    # 每人每日限购
+    limit-player: 500
+    # 按权限提高个人限额 拥有多个时取最高的一档
+    # 都不满足则用上面的 limit-player
+    limit-permissions:
+      shoppro.vip: 1000
+    # 低版本用 data 区分同材质的不同物品 高版本用不上
+    #    data: 1
+    lore:
+      - '&e| &7这里可以购买&6 {name}'
+      - '&e| &7购买单价 &6{price}'
+      - '&e| &7你的余额 &6{money}'
+      - ''
+      - '&e|&6 左击 &7购买 &6单个'
+      - '&e|&6 右击 &7购买 &6一组 &7需要 &6{price64}'
+      - ''
+      - '&e| &7限买公示:'
+      - '&e| &7每人限制购买: {limit}'
+      - '&e| &7全服限制购买: {allLimit}'
+      - '&e| &7您还可购买: {limit-player}'
+      - '&e| &7全服剩余: {limit-server}'
+
+  # CraftEngine 物品
+  # 图标会自动读取 CE 里配置的模型 名称和 lore 以本文件为准
+  B:
+    material: 'CE:default:ruby'
+    name: '&c红宝石'
+    price: 100
+    limit-server: 5000
+    limit-player: 500
+    lore:
+      - '&e| &7这里可以购买&6 {name}'
+      - '&e| &7购买单价 &6{price}'
+      - '&e| &7你的余额 &6{money}'
+      - ''
+      - '&e|&6 左击 &7购买 &6单个'
+      - '&e|&6 右击 &7购买 &6一组 &7需要 &6{price64}'
+      - ''
+      - '&e| &7限买公示:'
+      - '&e| &7每人限制购买: {limit}'
+      - '&e| &7全服限制购买: {allLimit}'
+      - '&e| &7您还可购买: {limit-player}'
+      - '&e| &7全服剩余: {limit-server}'
+
+  # MythicMobs 物品
+  C:
+    material: 'MM:KingsCrown'
+    name: '国王的王冠'
+    price: 500
+    limit-server: 100
+    limit-player: 1
+    # 关闭后不给原版物品 只执行下面的 commands
+    # 适合那些必须走自己插件命令发放的物品
+    vanilla: false
+    commands:
+      - '[console] mm items give %player% KingsCrown {amount}'
+      - '[tell] &a购买成功'
+    lore:
+      - '&e| &7这里可以购买&6 {name}'
+      - '&e| &7购买单价 &6{price}'
+      - '&e| &7你的余额 &6{money}'
+      - ''
+      - '&e|&6 左击 &7购买 &6单个'
+      - ''
+      - '&e| &7限买公示:'
+      - '&e| &7每人限制购买: {limit}'
+      - '&e| &7全服限制购买: {allLimit}'
+      - '&e| &7您还可购买: {limit-player}'
+      - '&e| &7全服剩余: {limit-server}'

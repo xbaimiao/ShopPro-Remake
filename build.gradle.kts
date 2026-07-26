@@ -37,6 +37,7 @@ easylib {
         softDepend.add("CraftEngine")
         softDepend.add("MythicMobs")
         softDepend.add("NeigeItems")
+        softDepend.add("FusangLedger")
         commands.add(com.xbaimiao.easylib.Env.Command("shoppro", "ShopPro 主命令", listOf("shop")))
     }
     version = easylibVersion
@@ -72,8 +73,10 @@ dependencies {
     // 也标成 pre-release, 导致别的插件挂钩 ShopPro API 时一并报错
     // 1.15.113 的 isNiItem/getItemStack/ItemInfo API 和新版一致, 运行时兼容新版 NI
     compileOnly("pers.neige.neigeitems:NeigeItems:$neigeItemsVersion")
-    // CraftEngine 和 MythicMobs 走 libs/ 本地 jar
-    // repo.momirealms.net 对 JVM 的 TLS 指纹会被网络中间设备 reset(curl 正常 Gradle 失败)
+    // CraftEngine / MythicMobs / FusangLedger 走 libs/ 本地 jar, 不入 git
+    // 需要哪些 jar 和从哪拿见 libs/README.md
+    // (CraftEngine 走本地是因为 repo.momirealms.net 对 JVM 的 TLS 指纹
+    //  会被网络中间设备 reset, curl 正常但 Gradle 解析失败)
     compileOnly(fileTree("libs"))
 }
 

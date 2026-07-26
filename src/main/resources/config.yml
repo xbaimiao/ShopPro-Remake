@@ -22,6 +22,19 @@ sound:
   # 交易失败 余额不足/物品不够/达到限购
   failure: ''
 
+# FusangLedger 多货币挂钩
+# 商品的 currency 字段填 fusang:货币ID 即可使用 例如 fusang:coin
+fusang-ledger:
+  # 购买扣款的等待超时 毫秒 最小 500
+  #
+  # FusangLedger 以 MySQL 为余额事实源 写入是异步的
+  # 而 ShopPro 必须先确认扣款成功才能发货 所以购买时会阻塞主线程等这个结果
+  # 这个值就是单次购买最坏情况下的卡顿上限 500 约等于 10 tick
+  # 数据库延迟高可以适当加大 但会同步放大卡顿上限 不建议超过 2000
+  #
+  # 出售入账不受此项影响 走队列每秒异步批量结算 不阻塞
+  write-timeout-ms: 500
+
 # 内部数据 请勿修改
 internal:
   # 上次重置限购数据的日期

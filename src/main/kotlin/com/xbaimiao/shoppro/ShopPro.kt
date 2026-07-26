@@ -6,6 +6,7 @@ import com.xbaimiao.easylib.util.registerListener
 import com.xbaimiao.shoppro.api.ShopProInitItemLoaderEvent
 import com.xbaimiao.shoppro.currency.CustomCurrency
 import com.xbaimiao.shoppro.currency.VaultCurrency
+import com.xbaimiao.shoppro.integration.FusangLedgerHook
 import com.xbaimiao.shoppro.item.ItemLoaderManager
 import com.xbaimiao.shoppro.shop.ShopManager
 import com.xbaimiao.shoppro.storage.MysqlStorage
@@ -42,6 +43,7 @@ class ShopPro : EasyPlugin(), Listener {
         CustomCurrency.load()
         ShopManager.load()
         VaultCurrency.startTask()
+        FusangLedgerHook.startTask()
 
         Bukkit.getOnlinePlayers().forEach { storage.loadPlayerData(it) }
     }
@@ -49,6 +51,10 @@ class ShopPro : EasyPlugin(), Listener {
     override fun disable() {
         // 把队列里没结算的出售收入发出去, 否则玩家的钱会丢
         VaultCurrency.flush()
+        // 关服时不能再往调度器丢异步任务, 只能在当前线程结算, 会阻塞关服流程
+        // 依赖关闭顺序: softdepend 让 FusangLedger 先启动, 因此它比 ShopPro 后关闭
+        // 这一刻它的账务线程池还在接受写入
+        FusangLedgerHook.flush()
         if (this::storage.isInitialized) {
             storage.close()
         }
@@ -68,6 +74,7 @@ class ShopPro : EasyPlugin(), Listener {
         reloadConfig()
 
         VaultCurrency.flush()
+        FusangLedgerHook.flush()
         Bukkit.getOnlinePlayers().forEach { storage.releasePlayerData(it) }
         storage.close()
 

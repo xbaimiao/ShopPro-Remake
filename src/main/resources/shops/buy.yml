@@ -48,6 +48,7 @@ items:
     name: '石头'
     # 指定货币 不填默认走 Vault
     # 内置 vault 和 points(PlayerPoints点券)
+    # fusang:货币ID 走 FusangLedger 的对应货币 例如 fusang:coin
     # 也可以填 currencys 目录下自定义货币的名字
     currency: points
     # 单价
@@ -81,6 +82,10 @@ items:
   B:
     material: 'CE:default:ruby'
     name: '&c红宝石'
+    # 用 FusangLedger 的 coin 货币结算
+    # 注意价格的小数位不能超过该货币在 FusangLedger 里配置的 scale
+    # 例如 scale 为 0 的货币不能写 0.5 会被判为非法金额
+    currency: 'fusang:coin'
     price: 100
     limit-server: 5000
     limit-player: 500

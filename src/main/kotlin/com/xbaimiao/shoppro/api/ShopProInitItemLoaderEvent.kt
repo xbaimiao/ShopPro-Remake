@@ -22,15 +22,18 @@ class ShopProInitItemLoaderEvent(val plugin: ShopPro) : BukkitProxyEvent() {
         plugin.itemLoaderManager.itemLoaders += loader
     }
 
-    override fun getHandlers(): HandlerList = handlers
+    override fun getHandlers(): HandlerList = handlerList
 
     companion object {
 
-        @JvmField
-        val handlers = HandlerList()
+        // 这个字段不能叫 handlers
+        // 父类 Event 声明了 getHandlers(), Kotlin 会为它合成同名实例属性 handlers
+        // 成员作用域优先于伴生对象, 那样 getHandlers() 里的 handlers
+        // 会解析成 this.getHandlers() 从而无限递归, 启动时直接 StackOverflowError
+        private val handlerList = HandlerList()
 
         @JvmStatic
-        fun getHandlerList(): HandlerList = handlers
+        fun getHandlerList(): HandlerList = handlerList
 
     }
 

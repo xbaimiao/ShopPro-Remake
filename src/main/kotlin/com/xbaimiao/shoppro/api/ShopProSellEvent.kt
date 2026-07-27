@@ -19,15 +19,15 @@ class ShopProSellEvent(
     override val allowCancelled: Boolean
         get() = false
 
-    override fun getHandlers(): HandlerList = handlers
+    override fun getHandlers(): HandlerList = handlerList
 
     companion object {
 
-        @JvmField
-        val handlers = HandlerList()
+        // 不能叫 handlers 原因见 ShopProInitItemLoaderEvent 同一处的注释
+        private val handlerList = HandlerList()
 
         @JvmStatic
-        fun getHandlerList(): HandlerList = handlers
+        fun getHandlerList(): HandlerList = handlerList
 
     }
 

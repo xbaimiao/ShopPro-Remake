@@ -22,6 +22,11 @@ sound:
   # 交易失败 余额不足/物品不够/达到限购
   failure: ''
 
+# 内置货币在交易消息和商店界面中显示的别名
+currency-aliases:
+  vault: "金币"
+  points: "点券"
+
 # FusangLedger 多货币挂钩
 # 商品的 currency 字段填 fusang:货币ID 即可使用 例如 fusang:coin
 fusang-ledger:

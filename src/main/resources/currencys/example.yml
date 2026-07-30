@@ -13,6 +13,9 @@
 # 货币的识别名 商品的 currency 字段填这个
 name: "示例货币"
 
+# 交易消息和商店界面中显示的别名 不填则使用上面的 name
+display-name: "示例币"
+
 # 扣除货币的命令 %player% 为玩家名 %num% 为数量
 take-command: "eco take %player% %num%"
 

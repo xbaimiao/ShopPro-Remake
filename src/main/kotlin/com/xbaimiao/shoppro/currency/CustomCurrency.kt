@@ -20,6 +20,9 @@ import java.io.File
 class CustomCurrency(configuration: Configuration) : Currency {
 
     val name: String = configuration.getString("name")!!
+    override val alias: String = configuration.getString("display-name")
+        ?.takeIf { it.isNotBlank() }
+        ?: name
     private val takeCommand: String = configuration.getString("take-command")!!
     private val giveCommand: String = configuration.getString("give-command")!!
     private val balancePlaceholder: String = configuration.getString("balance-placeholder")!!

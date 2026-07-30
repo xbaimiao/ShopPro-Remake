@@ -9,9 +9,10 @@
 #
 # lore 里可用的变量 {x} 和 ${x} 两种写法都支持:
 #   {name}          商品名
-#   {price}         单价
-#   {price64}       一组的价格
-#   {money}         玩家当前余额
+#   {currency}      商品关联的货币别名
+#   {price}         单价和货币别名
+#   {price64}       一组的价格和货币别名
+#   {money}         玩家当前余额和货币别名
 #   {limit}         每人限额
 #   {allLimit}      全服限额
 #   {limit-player}  该玩家剩余可交易数量

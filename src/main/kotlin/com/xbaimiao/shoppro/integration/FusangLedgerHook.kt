@@ -60,6 +60,14 @@ object FusangLedgerHook {
     }
 
     /**
+     * 读取 FusangLedger 货币定义中的展示名称, 服务尚未就绪时返回 null
+     */
+    fun displayNameOf(currencyId: String): String? {
+        val service = service() ?: return null
+        return runCatching { service.currency(currencyId)?.displayName }.getOrNull()
+    }
+
+    /**
      * 读缓存余额, 不阻塞
      *
      * 玩家数据还在加载中或货币不存在时返回 null

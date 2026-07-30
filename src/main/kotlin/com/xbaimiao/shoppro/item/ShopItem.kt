@@ -6,7 +6,6 @@ import com.xbaimiao.shoppro.currency.Currency
 import com.xbaimiao.shoppro.shop.Shop
 import com.xbaimiao.shoppro.shop.ShopType
 import com.xbaimiao.shoppro.util.countItems
-import com.xbaimiao.shoppro.util.format
 import com.xbaimiao.shoppro.util.modifyLore
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -123,21 +122,25 @@ abstract class ShopItem(
 
         val limitPlayerValue = getLimitPlayer(player)
         val balance = currency.getMoney(player)
+        val priceText = currency.displayAmount(price)
+        val balanceText = currency.displayAmount(balance)
+        val stackPriceText = currency.displayAmount(price * 64)
 
         return createIcon(player).modifyLore {
             val replaced = map { line ->
                 var result = line
                     .replaceVariable("name", name)
-                    .replaceVariable("price", price.toString())
-                    .replaceVariable("money", balance.toString())
-                    .replaceVariable("price64", (price * 64).toString())
+                    .replaceVariable("currency", currency.alias)
+                    .replaceVariable("price", priceText)
+                    .replaceVariable("money", balanceText)
+                    .replaceVariable("price64", stackPriceText)
                     .replaceVariable("limit", limitPlayerValue.toString())
                     .replaceVariable("allLimit", limitServer.toString())
                     .replaceVariable("limit-player", (limitPlayerValue - playerUsed).toString())
                     .replaceVariable("limit-server", (limitServer - serverUsed).toString())
                 if (!isBuyShop) {
                     val total = player.inventory.countItems { matches(it) } * price
-                    result = result.replaceVariable("priceAll", total.format().toString())
+                    result = result.replaceVariable("priceAll", currency.displayAmount(total))
                 }
                 result.replacePlaceholder(player)
             }

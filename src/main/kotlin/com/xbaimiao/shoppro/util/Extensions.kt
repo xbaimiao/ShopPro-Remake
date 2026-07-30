@@ -6,6 +6,7 @@ import org.bukkit.Bukkit
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import java.math.BigDecimal
 import java.text.DecimalFormat
 
 /**
@@ -20,6 +21,20 @@ val hasPlaceholderAPI: Boolean by lazy {
  */
 fun Double.format(): Double {
     return DecimalFormat("#0.00").format(this).toDouble()
+}
+
+/**
+ * 金额显示时移除无意义的末尾零, 同时避免用科学计数法展示
+ */
+fun Double.toDisplayAmount(): String {
+    return BigDecimal.valueOf(this).stripTrailingZeros().toPlainString()
+}
+
+/**
+ * BigDecimal 金额显示时移除无意义的末尾零
+ */
+fun BigDecimal.toDisplayAmount(): String {
+    return stripTrailingZeros().toPlainString()
 }
 
 /**

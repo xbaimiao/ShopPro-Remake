@@ -3,6 +3,7 @@ package com.xbaimiao.shoppro.currency
 import com.xbaimiao.easylib.util.warn
 import com.xbaimiao.shoppro.ShopPro
 import com.xbaimiao.shoppro.integration.FusangLedgerHook
+import com.xbaimiao.shoppro.util.toDisplayAmount
 import org.bukkit.entity.Player
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -21,6 +22,10 @@ import java.math.RoundingMode
  * 扣款的阻塞时长上限见 config.yml 的 fusang-ledger.write-timeout-ms
  */
 class FusangCurrency(private val currencyId: String) : Currency {
+
+    /** 优先使用 FusangLedger 货币配置中的 display-name */
+    override val alias: String
+        get() = FusangLedgerHook.displayNameOf(currencyId) ?: currencyId
 
     override fun hasMoney(player: Player, amount: Double): Boolean {
         val required = align(amount) ?: return false
@@ -46,6 +51,17 @@ class FusangCurrency(private val currencyId: String) : Currency {
             return
         }
         FusangLedgerHook.deposit(player, currencyId, aligned)
+    }
+
+    /** 按 FusangLedger 为该货币配置的小数位对齐后再展示 */
+    override fun formatAmount(amount: Double): String {
+        val scale = FusangLedgerHook.scaleOf(currencyId)
+        val value = BigDecimal.valueOf(amount)
+        return if (scale == null) {
+            value.toDisplayAmount()
+        } else {
+            value.setScale(scale, RoundingMode.HALF_UP).toDisplayAmount()
+        }
     }
 
     /**

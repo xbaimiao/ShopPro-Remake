@@ -235,7 +235,7 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
         ShopProBuyEvent(item, amount, player).call()
         ShopPro.inst.storage.addAmount(item, player, LimitData(amount.toLong(), 0L))
         item.executeCommands(player, amount)
-        player.sendLang("buy-item", amount, item.name, String.format("%.2f", cost))
+        player.sendLang("buy-item", amount, item.name, item.currency.displayAmount(cost))
         playSound(player, "success")
     }
 
@@ -251,7 +251,7 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
         item.currency.giveMoney(player, income)
         ShopProSellEvent(item, amount, player).call()
         ShopPro.inst.storage.addAmount(item, player, LimitData(0L, amount.toLong()))
-        player.sendLang("sell-item", amount, item.name, String.format("%.2f", income))
+        player.sendLang("sell-item", amount, item.name, item.currency.displayAmount(income))
         playSound(player, "success")
     }
 

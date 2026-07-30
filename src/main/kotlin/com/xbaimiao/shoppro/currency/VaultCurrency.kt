@@ -3,6 +3,7 @@ package com.xbaimiao.shoppro.currency
 import com.xbaimiao.easylib.bridge.economy.EconomyManager
 import com.xbaimiao.easylib.util.EListener
 import com.xbaimiao.easylib.util.submit
+import com.xbaimiao.shoppro.ShopPro
 import com.xbaimiao.shoppro.util.format
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -20,6 +21,12 @@ import java.util.concurrent.ConcurrentLinkedQueue
  */
 @EListener
 object VaultCurrency : Currency, Listener {
+
+    /** Vault 货币别名可在主配置中修改 */
+    override val alias: String
+        get() = ShopPro.inst.config.getString("currency-aliases.vault")
+            ?.takeIf { it.isNotBlank() }
+            ?: "金币"
 
     private data class PendingIncome(val player: Player, val money: Double)
 

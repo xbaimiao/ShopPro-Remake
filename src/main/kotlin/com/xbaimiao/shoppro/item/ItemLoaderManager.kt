@@ -1,13 +1,16 @@
 package com.xbaimiao.shoppro.item
 
+import com.xbaimiao.easylib.bridge.replacePlaceholder
 import com.xbaimiao.shoppro.item.impl.CraftEngineShopItem
-import com.xbaimiao.shoppro.item.impl.DecorationItem
 import com.xbaimiao.shoppro.item.impl.HeadShopItem
 import com.xbaimiao.shoppro.item.impl.MythicShopItem
 import com.xbaimiao.shoppro.item.impl.NeigeShopItem
 import com.xbaimiao.shoppro.item.impl.VanillaShopItem
 import com.xbaimiao.shoppro.shop.Shop
+import com.xbaimiao.shoppro.util.modifyLore
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 /**
  * 管理所有 [ItemLoader]
@@ -50,13 +53,34 @@ class ItemLoaderManager {
             ?: error("缺少 material 配置")
         val loader = matchLoader(material) ?: vanillaLoader()
         val item = loader.fromSection(char, section, shop)
-        return if (isCommodity) item else DecorationItem.wrap(item)
+        return if (isCommodity) item else item.asNonCommodityItem()
     }
 
     /** 原版商品加载器, 无前缀匹配时的兜底 */
     fun vanillaLoader(): ItemLoader = VanillaShopItem
 
-    /** 装饰品加载器 */
-    fun decorationLoader(): ItemLoader = DecorationItem
+}
 
+/**
+ * 将任意来源加载出的物品包装为不可交易的非商品
+ *
+ * 图标仍由来源加载器创建，因此原版、HEAD、CraftEngine、MythicMobs 和 NeigeItems
+ * 都能复用各自的图标解析逻辑。
+ */
+private fun Item.asNonCommodityItem(): Item {
+    val source = this
+    return object : Item by source {
+
+        override fun isCommodity(): Boolean = false
+
+        /** 非商品只替换展示文本中的 PAPI 变量，不执行商品价格和限购计算 */
+        override fun update(player: Player): ItemStack {
+            return source.createIcon(player).modifyLore {
+                val replaced = map { line -> line.replacePlaceholder(player) }
+                clear()
+                addAll(replaced)
+            }
+        }
+
+    }
 }

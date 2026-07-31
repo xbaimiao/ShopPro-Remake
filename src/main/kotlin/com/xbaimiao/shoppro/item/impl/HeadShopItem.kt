@@ -65,8 +65,12 @@ class HeadShopItem(
 
         /**
          * 头颅商品交易的是 item 字段而不是 material 字段
+         * 非商品只把头颅当图标使用, 不要求配置实际交易材质
          */
         override fun parseMaterial(section: ConfigurationSection): Material {
+            if (!section.getBoolean("is-commodity", true)) {
+                return XMaterial.PLAYER_HEAD.parseMaterial()!!
+            }
             return section.getString("item")?.parseToMaterial()
                 ?: error("头颅商品必须配置 item 字段指明实际交易的材质")
         }

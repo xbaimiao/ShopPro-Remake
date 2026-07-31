@@ -58,11 +58,7 @@ class DecorationItem(
     }
 
     override fun update(player: Player): ItemStack {
-        return createIcon(player).modifyLore {
-            val replaced = map { it.replacePlaceholder(player) }
-            clear()
-            addAll(replaced)
-        }
+        return updateDecorationIcon(player)
     }
 
     companion object : ItemLoader() {
@@ -84,6 +80,30 @@ class DecorationItem(
             )
         }
 
+        /**
+         * 复用任意物品加载器生成的图标, 但保持格子不可交易
+         */
+        fun wrap(source: Item): Item {
+            return object : Item by source {
+                override fun isCommodity(): Boolean = false
+
+                override fun update(player: Player): ItemStack {
+                    return source.updateDecorationIcon(player)
+                }
+            }
+        }
+
     }
 
+}
+
+/**
+ * 非商品只替换展示文本中的 PAPI 变量, 不执行商品价格和限购计算
+ */
+private fun Item.updateDecorationIcon(player: Player): ItemStack {
+    return createIcon(player).modifyLore {
+        val replaced = map { it.replacePlaceholder(player) }
+        clear()
+        addAll(replaced)
+    }
 }

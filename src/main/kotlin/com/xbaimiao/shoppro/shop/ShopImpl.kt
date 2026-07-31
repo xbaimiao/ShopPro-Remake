@@ -45,15 +45,12 @@ class ShopImpl(private val configuration: Configuration) : Shop() {
                 val itemSection = section.getConfigurationSection(key)
                     ?: error("items.$key 不是一个配置节点")
 
-                items += if (itemSection.getBoolean("is-commodity", true)) {
-                    val material = itemSection.getString("material")
-                        ?: error("items.$key 缺少 material 配置")
-                    val loader = ShopPro.inst.itemLoaderManager.matchLoader(material)
-                        ?: ShopPro.inst.itemLoaderManager.vanillaLoader()
-                    loader.fromSection(key[0], itemSection, this)
-                } else {
-                    ShopPro.inst.itemLoaderManager.decorationLoader().fromSection(key[0], itemSection, this)
-                }
+                items += ShopPro.inst.itemLoaderManager.fromSection(
+                    char = key[0],
+                    section = itemSection,
+                    shop = this,
+                    isCommodity = itemSection.getBoolean("is-commodity", true)
+                )
             }.onFailure {
                 warn("加载商店 ${getName()} 的物品 $key 时出错, 已跳过: ${it.message}")
                 it.printStackTrace()

@@ -36,6 +36,7 @@ layout:
 
 items:
   # 边框装饰 is-commodity 为 false 表示不可交易
+  # 非商品同样支持上方列出的 CE、MM、NeigeItems 和 HEAD 材质写法
   N:
     material: GLASS_PANE
     name: ' '
